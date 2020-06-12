@@ -10,7 +10,6 @@
 #define IBLOCK 6
 #define NUM_BLOCKS 8
 
-
 typedef struct 
 {
 	int x;
@@ -18,14 +17,25 @@ typedef struct
 } position_t;
 
 typedef position_t orientation_t[4];
+typedef orientation_t *block_t;
 
 typedef struct 
 {
 	int num_spin;
-	orientation_t *spins;
+	block_t spins;
 } tetrimino_t;
 
+
+
+
 tetrimino_t *initTetrimino();
+
 void freeTetriminos(tetrimino_t *tetriminos);
+
+int clockwise(tetrimino_t *tetriminos, int curr);
+
+int antiClockwise(tetrimino_t *tetriminos, int curr);
+
+void pplus(position_t *dst, position_t base, position_t shift);
 
 #endif

@@ -72,3 +72,16 @@ void freeTetriminos(tetrimino_t *tetriminos) {
 	}
 	free(tetriminos);
 }
+
+int clockwise(tetrimino_t *tetriminos, int curr){
+  return (curr + 1) % (tetriminos->num_spin);
+}
+
+int antiClockwise(tetrimino_t *tetriminos, int curr){
+  return (curr + tetriminos->num_spin - 1) % (tetriminos->num_spin);
+}
+
+void pplus(position_t *dst, position_t base, position_t shift){
+  dst->x += base.x + shift.x;
+  dst->y += base.y + shift.y;
+}
