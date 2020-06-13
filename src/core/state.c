@@ -1,4 +1,5 @@
 #include "state.h"
+#include "display.h"
 
 state_t *initState(int levelNum) {
   state_t *curr = malloc(sizeof(state_t));
@@ -37,10 +38,10 @@ void printState(state_t *curr) {
     *(getSquare(output, cell)) =
         curr->block - curr->list + 1;  // set colour to block val
   }
-  printGrid(output);
-  mvprintw(0, 35, "Level : %d\n", curr->level.levelNum);
-  mvprintw(1, 35, "Score : %d\n", curr->level.score);
-  mvprintw(2, 35, "Lines : %d\n", curr->totalLines);
+  print_grid(output);
+  mvprintw(0, 35, "Level : %-02d\n", curr->level.levelNum);
+  mvprintw(1, 35, "Score : %-10d\n", curr->level.score);
+  mvprintw(2, 35, "Lines : %-10d\n", curr->totalLines);
   printNext(curr);
 
   refresh();
