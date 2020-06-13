@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
 
   while (1) {
     if (!hasMoving) {
-      curr = list + (rand() % 7);
+      curr = list + rand() % 7;
       pos.x = 5;
       pos.y = 2;
       rotation = 0;
@@ -49,7 +49,7 @@ int main(int argc, char const *argv[]) {
       for (int i = 0; i < 4; i++) {
         position_t cell;
         pplus(&cell, pos, curr->spins[rotation][i]);
-        *(getSquare(grid, cell)) = curr - list;  // set colour to block val
+        *(getSquare(grid, cell)) = curr - list + 1;  // set colour to block val
       }
 			clearLines();
       hasMoving = false;
@@ -91,7 +91,7 @@ void printState(tetrimino_t *block, position_t pos, int rotation) {
   for (int i = 0; i < 4; i++) {
     position_t cell;
     pplus(&cell, pos, block->spins[rotation][i]);
-    *(getSquare(output, cell)) = block - list;  // set colour to block val
+    *(getSquare(output, cell)) = block - list + 1;  // set colour to block val
   }
   clear();
   printGrid(output);
@@ -119,11 +119,11 @@ void detectInput(tetrimino_t *block, position_t *pos, int *rotation) {
       break;
     case 'Z':
     case 'z':
-      testrotate = clockwise(block, testrotate);
+      testrotate = antiClockwise(block, testrotate);
       break;
     case 'X':
     case 'x':
-      testrotate = antiClockwise(block, testrotate);
+      testrotate = clockwise(block, testrotate);
       break;
   }
   if (!canMove(block, testpos, testrotate)) return;
