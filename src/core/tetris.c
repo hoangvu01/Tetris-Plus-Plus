@@ -38,6 +38,7 @@ int main(int argc, char const *argv[]) {
 
   freeState(curr);
   endwin();
+  printf("You scored %d points. \n", curr->level.score);
   return EXIT_SUCCESS;
 }
 
