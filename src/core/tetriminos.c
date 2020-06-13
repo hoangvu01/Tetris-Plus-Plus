@@ -59,9 +59,11 @@ static void setTetriminos(tetrimino_t *tetriminos, int block, int num_spin,
   tetriminos[block].spins = calloc(num_spin, sizeof(orientation_t));
 
   va_start(valist, spin);
+  orientation_t *curr = spin;
   for (int i = 0; i < num_spin; i++) {
-    orientation_t *curr = va_arg(valist, orientation_t *);
-    memcpy(tetriminos[block].spins + i, curr, sizeof(orientation_t));
+    memcpy(tetriminos[block].spins[i], *curr, sizeof(orientation_t));
+    curr = va_arg(valist, orientation_t *);
+
   }
 }
 

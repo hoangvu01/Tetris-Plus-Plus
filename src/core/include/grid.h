@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
-
+#include <string.h>
 #include "tetriminos.h"
 
 typedef int colour_t;
@@ -22,6 +22,8 @@ grid_t cloneGrid(grid_t grid);
 void printGrid(grid_t grid);
 
 colour_t *getSquare(grid_t grid, position_t p);
+
+int clearLines(grid_t grid);
 
 void freeGrid(grid_t grid);
 

@@ -25,7 +25,7 @@ libs:
 
 clean:
 	rm -f $(wildcard $(OBJ_DIR)/*.o)
-	rm -f $(BIN_DIR)/assemble
+	rm -f $(BIN_DIR)/tetris
 	cd tests; make clean
 	cd $(LIB_DIR); make clean
 
