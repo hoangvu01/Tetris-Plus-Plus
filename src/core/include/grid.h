@@ -28,3 +28,4 @@ int clearLines(grid_t grid);
 void freeGrid(grid_t grid);
 
 #endif
+
