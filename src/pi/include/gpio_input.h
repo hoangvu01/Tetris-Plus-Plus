@@ -2,7 +2,10 @@
  * An Interface for using Raspberry PI's GPIO input as the operator of Tetris
  */
 
-enum operations {NONE, LEFT, RIGHT, RLEFT, RRIGHT};
+#ifndef GPIO_IN
+#define GPIO_IN
+
+enum operations {NONE, LEFT, RIGHT, RLEFT, RRIGHT, DOWN};
 typedef enum operations operator_t;
 
 /*
@@ -10,3 +13,5 @@ typedef enum operations operator_t;
  * @returns: An enum for the operation
  */
 operator_t get_input(void);
+
+#endif
