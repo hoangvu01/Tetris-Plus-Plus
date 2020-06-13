@@ -1,9 +1,12 @@
 #include "state.h"
 
-state_t *initState(){
+state_t *initState(int levelNum){
   state_t *curr = malloc(sizeof(state_t));
   curr->grid = initGrid();
   curr->list = initTetrimino();
+  curr->level = initLevel(levelNum);
+  curr->totalLines = 0;
+
   return curr;
 }
 
@@ -33,6 +36,9 @@ void printState(state_t *curr) {
   }
   clear();
   printGrid(output);
+  printw("\n\nLevel : %d\n", curr->level.levelNum);
+  printw("Score : %d\n", curr->level.score);
+  printw("Lines : %d\n", curr->totalLines);
   refresh();
   freeGrid(output);
 }
@@ -49,7 +55,9 @@ bool dropPiece(state_t *curr) {
       pplus(&cell, curr->pos, curr->block->spins[curr->rotation][i]);
       *(getSquare(curr->grid, cell)) = curr->block - curr->list + 1;  // set colour to block val
     }
-    clearLines(curr->grid);
+    int linesCleared = clearLines(curr->grid);
+    curr->totalLines += linesCleared;
+    curr->level = update_level(curr->level, curr->totalLines, linesCleared);
     return false;
   }
 }
