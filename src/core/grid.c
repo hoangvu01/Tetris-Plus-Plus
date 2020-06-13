@@ -33,7 +33,7 @@ void printGrid(grid_t grid) {
       else
         printw("%d ", grid[i][j]);
     }
-    printw("\n");
+    printw("|\n");
   }
   for (int j = 0; j < GWIDTH; j++) {
     printw("_ ");

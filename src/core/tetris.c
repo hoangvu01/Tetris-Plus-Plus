@@ -14,7 +14,8 @@ int main(int argc, char const *argv[]) {
   cbreak();
   nodelay(w, TRUE);
   noecho();
-
+  curs_set(0);
+  
   state_t *curr = initState(levelNum);
   bool hasMoving = false;
 
