@@ -5,17 +5,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <unistd.h>
 
 #include "grid.h"
 #include "tetriminos.h"
+#include "levels.h"
+
 
 typedef struct {
 	/* list of all tetrimino and grid of static blocks */
 	tetrimino_t *list;
 	grid_t grid;
-
+	level_t level;
+	int totalLines;
+	
 	/* information about active block */
   tetrimino_t *block;
   position_t pos;
