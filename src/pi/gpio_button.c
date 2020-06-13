@@ -50,11 +50,11 @@ void init_gpio_but(void) {
   }
 
   set = false;
-  pinMode(LEFT_BUT, INPUT);
-  pinMode(RIGHT_BUT, INPUT);
-  pinMode(RLEFT_BUT, INPUT);
-  pinMode(RRIGHT_BUT, INPUT);
-  pinMode(DOWN, INPUT);
+  pinMode(LEFT_BUT, INPUT_PULLDOWN);
+  pinMode(RIGHT_BUT, INPUT_PULLDOWN);
+  pinMode(RLEFT_BUT, INPUT_PULLDOWN);
+  pinMode(RRIGHT_BUT, INPUT_PULLDOWN);
+  pinMode(DOWN_BUT, INPUT_PULLDOWN);
 }
 
 static bool all_low(void) {
