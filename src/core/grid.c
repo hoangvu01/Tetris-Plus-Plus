@@ -12,13 +12,26 @@ grid_t initGrid() {
   return grid;
 }
 
+grid_t cloneGrid(grid_t grid) {
+  grid_t clone = calloc(GHEIGHT, sizeof(colour_t *));
+
+  for (int i = 0; i < GHEIGHT; i++) {
+    clone[i] = calloc(GWIDTH, sizeof(colour_t));
+    for (int j = 0; j < GWIDTH; j++) {
+      clone[i][j] = grid[i][j];
+    }
+  }
+  return clone;
+}
+
 void printGrid(grid_t grid) {
   /* top 2 rows are hidden */
   for (int i = 2; i < GHEIGHT; i++) {
     for (int j = 0; j < GWIDTH; j++) {
-      printf("%d", grid[i][j]);
+      if (grid[i][j] == 0) printw(" ");
+      else printw("%d", grid[i][j]);
     }
-    printf("\n");
+    printw("\n");
   }
 }
 

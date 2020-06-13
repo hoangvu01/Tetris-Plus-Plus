@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ncurses.h>
+
 #include "tetriminos.h"
 
 typedef int colour_t;
@@ -14,6 +16,8 @@ typedef colour_t **grid_t;
 #define GHEIGHT 22 //Top 2 rows are hidden
 
 grid_t initGrid();
+
+grid_t cloneGrid(grid_t grid);
 
 void printGrid(grid_t grid);
 

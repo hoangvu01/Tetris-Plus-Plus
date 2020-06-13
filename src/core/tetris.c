@@ -14,17 +14,19 @@ static grid_t grid;
 void detectInput(tetrimino_t *block, position_t *pos, int *rotation);
 bool canMove(tetrimino_t *block, position_t pos, int rotation);
 void printState(tetrimino_t *block, position_t pos, int rotation);
+int clearLines();
 
 int main(int argc, char const *argv[]) {
   initscr();
-  timeout(-1);
+  timeout(500);
+  noecho();
 
   grid = initGrid();
   list = initTetrimino();
   tetrimino_t *curr;
   int rotation;
   position_t pos;
-  bool hasMoving;
+  bool hasMoving = false;
 
   while (1) {
     if (!hasMoving) {
@@ -35,7 +37,7 @@ int main(int argc, char const *argv[]) {
       if (!canMove(curr, pos, rotation)) break;
       hasMoving = true;
     }
-
+    printState(curr, pos, rotation);
     detectInput(curr, &pos, &rotation);
 
     /* gravity */
@@ -49,10 +51,9 @@ int main(int argc, char const *argv[]) {
         pplus(&cell, pos, curr->spins[rotation][i]);
         *(getSquare(grid, cell)) = curr - list;  // set colour to block val
       }
+			clearLines();
       hasMoving = false;
     }
-
-    printState(curr, pos, rotation);
   }
 
   endwin();
@@ -61,22 +62,41 @@ int main(int argc, char const *argv[]) {
   return EXIT_SUCCESS;
 }
 
-void printState(tetrimino_t *block, position_t pos, int rotation) {
-  for (int i = 2; i < GHEIGHT; i++) {
-    for (int j = 0; j < GWIDTH; j++) {
-      bool isMoving = false;
-      for (int k = 0; k < 4; k++) {
-        position_t cell;
-        pplus(&cell, pos, block->spins[rotation][k]);
-        if (cell.x == j && cell.y == i){
-					printf("%d", (int) (block - list));
-					isMoving = true;
-				}
-      }
-      if (!isMoving) printf("%d", grid[i][j]);
-    }
-    printf("\n");
+int clearLines() {
+  int completedlines = 0;
+  /* clears top buffers */
+  for (int i = 0; i < 2; i++) {
+		memset(grid[i], 0x00, GWIDTH * sizeof(colour_t));
   }
+
+  for (int i = 2; i < GHEIGHT; i++) {
+    bool isComplete = true;
+    for (int j = 0; j < GWIDTH; j++) {
+      if (grid[i][j] == 0) isComplete = false;
+    }
+
+    if (isComplete) {
+      completedlines++;
+      for (int k = i; k >= 2; k--) {
+        memcpy(grid[k], grid[k - 1], GWIDTH * sizeof(colour_t));
+      }
+    }
+  }
+  return completedlines;
+}
+
+void printState(tetrimino_t *block, position_t pos, int rotation) {
+  grid_t output = cloneGrid(grid);
+
+  for (int i = 0; i < 4; i++) {
+    position_t cell;
+    pplus(&cell, pos, block->spins[rotation][i]);
+    *(getSquare(output, cell)) = block - list;  // set colour to block val
+  }
+  clear();
+  printGrid(output);
+  refresh();
+  freeGrid(output);
 }
 
 void detectInput(tetrimino_t *block, position_t *pos, int *rotation) {
@@ -98,9 +118,11 @@ void detectInput(tetrimino_t *block, position_t *pos, int *rotation) {
       }
       break;
     case 'Z':
+    case 'z':
       testrotate = clockwise(block, testrotate);
       break;
     case 'X':
+    case 'x':
       testrotate = antiClockwise(block, testrotate);
       break;
   }
@@ -114,9 +136,9 @@ bool canMove(tetrimino_t *block, position_t pos, int rotation) {
     position_t cell;
     pplus(&cell, pos, block->spins[rotation][i]);
 
-    if (cell.y < -2 || cell.y >= 20) return false;
-    if (cell.x < 0 || cell.x >= 10) return false;
-    if (getSquare(grid, cell) != 0) return false;
+    if (cell.y < -2 || cell.y >= GHEIGHT) return false;
+    if (cell.x < 0 || cell.x >= GWIDTH) return false;
+    if (*getSquare(grid, cell) != 0) return false;
   }
   return true;
 }
