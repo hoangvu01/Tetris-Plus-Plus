@@ -1,23 +1,25 @@
 #include "state.h"
 
-state_t *initState(int levelNum){
+state_t *initState(int levelNum) {
   state_t *curr = malloc(sizeof(state_t));
   curr->grid = initGrid();
   curr->list = initTetrimino();
   curr->level = initLevel(levelNum);
   curr->totalLines = 0;
-
+  curr->nextBlock = curr->list + rand() % 7;
   return curr;
 }
 
-void freeState(state_t *curr){
+void freeState(state_t *curr) {
   freeGrid(curr->grid);
   freeTetriminos(curr->list);
   free(curr);
 }
 
 bool spawnTetriminos(state_t *curr) {
-  curr->block = curr->list + rand() % 7;
+  curr->block = curr->nextBlock;
+  curr->nextBlock = curr->list + rand() % 7;
+
   curr->pos.x = 5;
   curr->pos.y = 2;
   curr->rotation = 0;
@@ -39,8 +41,30 @@ void printState(state_t *curr) {
   printw("\n\nLevel : %d\n", curr->level.levelNum);
   printw("Score : %d\n", curr->level.score);
   printw("Lines : %d\n", curr->totalLines);
+  printNext(curr);
   refresh();
   freeGrid(output);
+}
+
+void printNext(state_t *curr) {
+  printw("next:\n");
+  for (int i = 2; i < 5; i++) {
+    printw("       ");
+    for (int j = 0; j < 5; j++) {
+      bool isEmpty = true;
+      for (int k = 0; k < 4; k++) {
+        position_t cell = {2, 2};
+        pplus(&cell, cell, curr->nextBlock->spins[0][k]);
+
+        if (cell.x == j && cell.y == i) {
+          isEmpty = false;
+          printw("%d ", curr->nextBlock - curr->list);
+        }
+      }
+      if (isEmpty) printw("  ");
+    }
+    printw("\n");
+  }
 }
 
 bool dropPiece(state_t *curr) {
@@ -53,7 +77,8 @@ bool dropPiece(state_t *curr) {
     for (int i = 0; i < 4; i++) {
       position_t cell;
       pplus(&cell, curr->pos, curr->block->spins[curr->rotation][i]);
-      *(getSquare(curr->grid, cell)) = curr->block - curr->list + 1;  // set colour to block val
+      *(getSquare(curr->grid, cell)) =
+          curr->block - curr->list + 1;  // set colour to block val
     }
     int linesCleared = clearLines(curr->grid);
     curr->totalLines += linesCleared;

@@ -19,6 +19,7 @@ typedef struct {
 	int totalLines;
 	
 	/* information about active block */
+	tetrimino_t *nextBlock;
   tetrimino_t *block;
   position_t pos;
   int rotation;
@@ -31,5 +32,5 @@ void detectInput(state_t *curr);
 bool canMove(state_t *teststate);
 bool spawnTetriminos(state_t *curr);
 bool dropPiece(state_t *curr);
-
+void printNext(state_t *curr);
 #endif
