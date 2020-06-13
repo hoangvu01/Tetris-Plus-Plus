@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <time.h>
+#include <unistd.h>
+
 #include "grid.h"
 #include "tetriminos.h"
 
@@ -17,8 +20,9 @@ void printState(tetrimino_t *block, position_t pos, int rotation);
 int clearLines();
 
 int main(int argc, char const *argv[]) {
-  initscr();
-  timeout(500);
+  WINDOW *w = initscr();
+  cbreak();
+  nodelay(w, TRUE);
   noecho();
 
   grid = initGrid();
@@ -28,7 +32,20 @@ int main(int argc, char const *argv[]) {
   position_t pos;
   bool hasMoving = false;
 
+  struct timespec now, lastFrame;
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now);
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &lastFrame);
+  unsigned long frameNum = 0;
+
   while (1) {
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now);
+    double delta = (now.tv_sec - lastFrame.tv_sec) * 1e6 + (now.tv_nsec - lastFrame.tv_nsec) / 1e3; 
+    lastFrame = now;
+    frameNum++;
+    if (delta < 16667) {
+      usleep(16667 - delta);
+    }
+
     if (!hasMoving) {
       curr = list + rand() % 7;
       pos.x = 5;
@@ -41,19 +58,23 @@ int main(int argc, char const *argv[]) {
     detectInput(curr, &pos, &rotation);
 
     /* gravity */
-    position_t testpos = pos;
-    testpos.y++;
-    if (canMove(curr, testpos, rotation)) {
-      pos = testpos;
-    } else {
-      for (int i = 0; i < 4; i++) {
-        position_t cell;
-        pplus(&cell, pos, curr->spins[rotation][i]);
-        *(getSquare(grid, cell)) = curr - list + 1;  // set colour to block val
+    if (frameNum % 28 == 0) {
+      position_t testpos = pos;
+      testpos.y++;
+      if (canMove(curr, testpos, rotation)) {
+        pos = testpos;
+      } else {
+        for (int i = 0; i < 4; i++) {
+          position_t cell;
+          pplus(&cell, pos, curr->spins[rotation][i]);
+          *(getSquare(grid, cell)) =
+              curr - list + 1;  // set colour to block val
+        }
+        clearLines();
+        hasMoving = false;
       }
-			clearLines();
-      hasMoving = false;
     }
+
   }
 
   endwin();
@@ -66,7 +87,7 @@ int clearLines() {
   int completedlines = 0;
   /* clears top buffers */
   for (int i = 0; i < 2; i++) {
-		memset(grid[i], 0x00, GWIDTH * sizeof(colour_t));
+    memset(grid[i], 0x00, GWIDTH * sizeof(colour_t));
   }
 
   for (int i = 2; i < GHEIGHT; i++) {
