@@ -26,3 +26,4 @@ colour_t *getSquare(grid_t grid, position_t p);
 void freeGrid(grid_t grid);
 
 #endif
+

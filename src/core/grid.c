@@ -45,3 +45,4 @@ void freeGrid(grid_t grid) {
   }
   free(grid);
 }
+

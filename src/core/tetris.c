@@ -142,3 +142,4 @@ bool canMove(tetrimino_t *block, position_t pos, int rotation) {
   }
   return true;
 }
+
