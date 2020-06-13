@@ -15,6 +15,7 @@ int main(int argc, char const *argv[]) {
   nodelay(w, TRUE);
   noecho();
   curs_set(0);
+  keypad(stdscr, true);
   
   state_t *curr = initState(levelNum);
   bool hasMoving = false;
