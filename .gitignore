@@ -25,7 +25,7 @@
 bin/tetris
 
 #ignore junk files from running C code
-bin/*.txt
+*.txt
 
 #ignore junk files from compiling Haskell code
 *.hi
