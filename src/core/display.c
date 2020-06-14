@@ -66,7 +66,6 @@ WINDOW *init_display() {
   x_offset = maxx / 2 - window_width;
 
   WINDOW *game = subwin(main, GHEIGHT, window_width, y_offset, x_offset);
-  box(game, 0, 0);
   touchwin(stdscr);
   wrefresh(game);
   return game;
@@ -100,6 +99,8 @@ void printState(state_t *curr, WINDOW *game_window) {
     *(getSquare(output, cell)) =
         curr->block - curr->list + 1;  // set colour to block val
   }
+  box(game_window, 0, 0);
+
   printGrid(output, game_window);
   mvprintw(score_y_offset++, score_x_offset, "Level : %d\n", curr->level.levelNum);
   mvprintw(score_y_offset++, score_x_offset, "Score : %d\n", curr->level.score);

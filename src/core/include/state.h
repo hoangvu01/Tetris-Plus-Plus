@@ -28,6 +28,7 @@ typedef struct {
 state_t *initState();
 void freeState(state_t *curr);
 void detectInput(state_t *curr);
+void pauseGame();
 bool canMove(state_t *teststate);
 bool spawnTetriminos(state_t *curr);
 bool dropPiece(state_t *curr);
