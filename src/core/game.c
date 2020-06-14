@@ -33,7 +33,7 @@ void startGame(int levelNum) {
       hasMoving = true;
     }
     printState(curr, game_win);
-    detectInput(curr);
+    processInput(curr);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);
   }

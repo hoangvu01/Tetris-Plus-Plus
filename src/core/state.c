@@ -50,9 +50,14 @@ bool dropPiece(state_t *curr) {
   }
 }
 
-void detectInput(state_t *curr) {
+int getInput(){
+  // TODO: implement this to support both PC and Pi
+  return getch();
+}
+
+void processInput(state_t *curr) {
   state_t teststate = *curr;
-  switch (getch()) {
+  switch (getInput()) {
     case KEY_DOWN:
       teststate.pos.y++;
       break;
