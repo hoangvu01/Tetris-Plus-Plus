@@ -26,7 +26,12 @@ int main(int argc, char const *argv[]) {
     printState(curr);
     detectInput(curr);
 
-    if (frameNum % 28 == 0) hasMoving = dropPiece(curr);
+    if (frameNum % 28 == 0) {
+        hasMoving = dropPiece(curr);
+        if (!hasMoving) {
+            clearLines(curr->grid);
+        }
+    }
   }
 
   freeState(curr);

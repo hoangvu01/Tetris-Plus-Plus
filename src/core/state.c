@@ -49,7 +49,7 @@ bool dropPiece(state_t *curr) {
       pplus(&cell, curr->pos, curr->block->spins[curr->rotation][i]);
       *(getSquare(curr->grid, cell)) = curr->block - curr->list + 1;  // set colour to block val
     }
-    clearLines(curr->grid);
+    //clearLines(curr->grid);
     return false;
   }
 }
