@@ -10,7 +10,7 @@ int main(int argc, char const *argv[]) {
 
   state_t *curr = initState(levelNum);
   bool hasMoving = false;
-
+  srand(time(0)); 
   timespec_t now, lastFrame;
   unsigned long frameNum = 0;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &lastFrame);
