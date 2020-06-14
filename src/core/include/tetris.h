@@ -6,6 +6,3 @@
 #include <time.h>
 #include <unistd.h>
 
-#define FRAME_RATE 60
-typedef struct timespec timespec_t;
-void updateFrame(timespec_t *now, timespec_t *lastFrame, unsigned long *frameNum);
