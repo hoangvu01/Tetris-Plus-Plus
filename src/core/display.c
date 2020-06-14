@@ -8,17 +8,29 @@
 #define WIN_MIN_WIDTH 60
 #define WIN_MIN_HEIGHT 40
 
+void init_game_colour();
 void print_grid(grid_t grid, WINDOW *game_window);
 void print_next(state_t *cur, WINDOW *item_window);
 
 WINDOW *init_display() {
   WINDOW *main = initscr();
+  /* Set colour properties */
+  if (!has_colors()) {
+    fprintf(stderr, "You must enable colour terminal");
+    endwin();
+    exit(EXIT_FAILURE);
+  }
+  start_color();
+  init_game_colour();
+  wbkgd(stdscr, COLOR_PAIR(0));
+
   cbreak();
   noecho();
   nodelay(main, TRUE);
   box(main, 0, 0);
   curs_set(0);
   refresh();
+
 
   // TODO: write an offset as a function of window size
   int y_offset = 3, x_offset = 3;
@@ -29,6 +41,15 @@ WINDOW *init_display() {
   return game;
 }
 
+void init_game_colour() {
+  init_pair(0, COLOR_BLACK, COLOR_BLACK);
+  init_pair(1, COLOR_BLUE, COLOR_BLUE);
+  init_pair(2, COLOR_GREEN, COLOR_GREEN);
+  init_pair(3, COLOR_CYAN, COLOR_CYAN);
+  init_pair(4, COLOR_YELLOW, COLOR_YELLOW);
+  init_pair(5, COLOR_MAGENTA, COLOR_MAGENTA);
+  init_pair(6, COLOR_RED, COLOR_RED);
+}
 
 void print_state(state_t *curr, WINDOW *game_window) {
   /* Calculate the position for scoreboard */
@@ -54,7 +75,7 @@ void print_state(state_t *curr, WINDOW *game_window) {
   mvprintw(score_y_offset++, score_x_offset, "Next:");
   
   WINDOW *item_win = subwin(stdscr, 6, 10, ++score_y_offset, score_x_offset);
-  wborder(item_win, 'f', 'k', 'u', '_', '+', '+', '+', '+');
+  wborder(item_win, '|', '|', '-', '-', '+', '+', '+', '+');
   touchwin(game_window);
   print_next(curr, item_win);
 
@@ -67,16 +88,15 @@ void print_grid(grid_t grid, WINDOW *w_game) {
   for (int i = 2; i < GHEIGHT; i++) {
     wmove(w_game, i - 1, 1);
     for (int j = 0; j < GWIDTH; j++) {
-      if (grid[i][j] == 0)
-        wprintw(w_game, "  ");
-      else
-        wprintw(w_game, "%d ", grid[i][j]);
+      waddch(w_game, ' ' | COLOR_PAIR(grid[i][j]));
+      waddch(w_game, ' ' | COLOR_PAIR(grid[i][j]));
     }
   }
   touchwin(stdscr);
 }
 
 void print_next(state_t *curr, WINDOW *item_win) {
+  /*
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       bool isEmpty = true;
@@ -92,5 +112,6 @@ void print_next(state_t *curr, WINDOW *item_win) {
       if (isEmpty) wprintw(item_win, "  ");
     }
   }
+  */
 }
 
