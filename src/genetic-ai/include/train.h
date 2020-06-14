@@ -34,7 +34,7 @@ param_state_t **init_param_array(int size);
  * @param: tetriminos_t *best_block: the pointer to the block that will be set to the best move
  * @param: int index and int total: total is used to track how many blocks to look ahead and index is used for termination of recursion
  */
-double best_move(state_t *state, param_state_t *param, tetriminos_t *best_block, int index, int total) {
+double best_move(state_t *state, param_state_t *param, tetrimino_t *best_block, int index, int total);
 
 
 /*
@@ -62,4 +62,4 @@ param_state_t **select_fittest(param_state_t **param_array, int array_size, doub
 void generate_child(param_state_t **prev_param_array, param_state_t **param_array, int array_size);
 
 
-#endif TETRIS_PLUS_PLUS_TRAIN_H
+#endif

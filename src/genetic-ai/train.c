@@ -1,7 +1,33 @@
 #include "train.h"
+#include "utils.h"
+
+#define ARRAY_SIZE 100
 
 int main(void) {
+    param_state_t **param_array = init_param_array(ARRAY_SIZE);
+    printf("Computing the loss of initial population...");
+    for (int i = 0; param_array[i] != NULL; i++) {
+        compute_loss(param_array[i], 5, 200);
+    }
 
+    int count = 0;
+    while(count > 1000) {
+        for (int i = 0; i < 30; i++) {
+            param_state_t **fittest = select_fittest(param_array, ARRAY_SIZE, 0.3, 2);
+            generate_child(fittest, param_array, ARRAY_SIZE);
+        }
+        printf("Computing loss of new parameter vectors...");
+        for (int i = 0; param_array[i] != NULL; i++) {
+            compute_loss(param_array[i], 5, 200);
+        }
+
+        double total_loss = 0;
+        for (int i = 0; i < ARRAY_SIZE; i++) {
+            total_loss += param_array[i]->loss;
+        }
+        printf("Average Loss= %f", total_loss);
+        count++;
+    }
 }
 
 param_state_t *generate_random_param() {
@@ -29,16 +55,16 @@ param_state_t **init_param_array(int size) {
     return array;
 }
 
-double best_move(state_t *state, param_state_t *param, tetriminos_t *best_block, int index, int total) {
+double best_move(state_t *state, param_state_t *param, tetrimino_t *best_block, int index, int total) {
     double best_loss = 0;
     spawnTetriminos(state);
     /* try different rotation/direction */
     for (int i = 0; i < 4; i++) {
-        tetriminos_t *active_block = state->block;
+        tetrimino_t *active_block = state->block;
         state->rotation = clockwise(active_block, state->rotation);
         state->pos.x = 0;
         while (canMove(state)) {
-            while(dropPiece(state));
+            while(dropPiece(state)) {}
             double curr_loss = 0;
             if (index == (total - 1)) {
                 curr_loss = - param->aggregate_height_w*get_aggregate_height(state->grid)
@@ -46,13 +72,13 @@ double best_move(state_t *state, param_state_t *param, tetriminos_t *best_block,
                             - param->bumpiness_w*get_bumpiness(state->grid)
                             + param->complete_line_w*get_complete_line(state->grid);
             } else {
-                curr_loss = best_move(state, param, best, index + 1, total);
+                curr_loss = best_move(state, param, best_block, index + 1, total);
             }
 
             if (curr_loss > best_loss) {
                 best_loss = curr_loss;
                 state->block->num_spin = state->rotation;
-                *best_tetriminos = state->block;
+                best_block = state->block;
             }
 
             state->pos.x++;
@@ -65,11 +91,11 @@ double best_move(state_t *state, param_state_t *param, tetriminos_t *best_block,
 void compute_loss(param_state_t *param, int iterations, int max_pieces) {
     double param_loss = 0;
     for (int i = 0; i < iterations; i++) {
-        state_t state = initState();
+        state_t *state = initState();
         double loss = 0;
         double num_pieces = 0;
         while (num_pieces++ < max_pieces && canMove(state)) {
-            tetriminos_t *best_block = NULL;
+            tetrimino_t *best_block = NULL;
             best_move(state, param, best_block, 0, 2);
             while (dropPiece(state));
             /* Must separate clearLines and dropPiece */
@@ -100,7 +126,7 @@ void generate_child(param_state_t **prev_param_array, param_state_t **param_arra
     param->hole_number_w = 0;
     param->bumpiness_w = 0;
     for (int i = 0; prev_param_array[i] != NULL; i++) {
-        param_state_t temp = prev_param_array[i];
+        param_state_t *temp = prev_param_array[i];
         param->aggregate_height_w += temp->aggregate_height_w * temp->loss;
         param->complete_line_w += temp->complete_line_w * temp->loss;
         param->hole_number_w += temp->hole_number_w * temp->loss;

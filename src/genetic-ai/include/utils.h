@@ -11,8 +11,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
-#include "state.h"
 #include "param.h"
+#include "grid.h"
+#include "state.h"
+#include "tetriminos.h"
 
 /*
  * @brief: normalize the fields in parameter vector by its unit length
@@ -51,3 +53,5 @@ int get_bumpiness(grid_t grid);
  * @param: bool is_saving: if set then it will save to a new file, if not set it will only print the fittest ones
  */
 void print_and_save_result(param_state_t **array, bool is_saving);
+
+#endif

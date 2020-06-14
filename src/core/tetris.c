@@ -1,7 +1,6 @@
 #include "tetris.h"
 #include "state.h"
 
-
 int main(int argc, char const *argv[]) {
   WINDOW *w = initscr();
   cbreak();

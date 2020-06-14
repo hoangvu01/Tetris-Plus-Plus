@@ -37,10 +37,10 @@ void free_param_array(param_state_t **param_array) {
   free(param_array);
 }
 
-static void merge(param_state_t param_array[], int l, int m, int r) {
+static void merge(param_state_t *param_array[], int l, int m, int r) {
     int n1 = m - l + 1;
     int n2 = r - m;
-    param_state_t L[n1], R[n2];
+    param_state_t *L[n1], *R[n2];
     for (int i = 0; i < n1; i++) L[i] = param_array[l + i];
     for (int j = 0; j < n2; j++) R[j] = param_array[m + j + 1];
 
@@ -51,7 +51,7 @@ static void merge(param_state_t param_array[], int l, int m, int r) {
             i++;
         } else {
             param_array[k] = R[j];
-            j++
+            j++;
         }
         k++;
     }
@@ -72,8 +72,8 @@ static void merge(param_state_t param_array[], int l, int m, int r) {
 void sort_param_array(param_state_t **param_array, int l, int r) {
   if (l < r) {
       int m = l + (r - l) / 2;
-      mergeSort(param_array, l, m);
-      mergeSort(param_array, m + 1, r);
+      sort_param_array(param_array, l, m);
+      sort_param_array(param_array, m + 1, r);
       merge(param_array, l, m, r);
   }
 }
@@ -84,6 +84,8 @@ static int get_column_height(grid_t grid, int c) {
             return GHEIGHT - y;
         }
     }
+
+    return 0;
 }
 
 int get_aggregate_height(grid_t grid) {
@@ -131,8 +133,11 @@ void print_and_save_result(param_state_t **array, bool is_saving) {
            second->loss, second->aggregate_height_w, second->complete_line_w, second->hole_number_w, second->bumpiness_w);
     if (is_saving) {
         FILE *fp = fopen("training_progress.txt", "w");
-        /* NOT FINISHED */
-        fprintf(fp, "");
+        fprintf(fp, "loss, aggregate_height_w, complete_line_w, hole_number_w, bumpiness_w\n");
+        for (int i = 0; array[i] != NULL; i++) {
+            fprintf(fp, "%f, %f, %f, %f, %f\n", array[i]->loss, array[i]->aggregate_height_w,
+                    array[i]->complete_line_w, array[i]->hole_number_w, array[i]->bumpiness_w);
+        }
         fclose(fp);
     }
 }
