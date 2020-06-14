@@ -8,8 +8,8 @@
 #define WIN_MIN_WIDTH 60
 #define WIN_MIN_HEIGHT 40
 
-void print_grid(grid_t, WINDOW *);
-void print_next(state_t *);
+void print_grid(grid_t grid, WINDOW *game_window);
+void print_next(state_t *cur, WINDOW *item_window);
 
 WINDOW *init_display() {
   WINDOW *main = initscr();
@@ -31,6 +31,14 @@ WINDOW *init_display() {
 
 
 void print_state(state_t *curr, WINDOW *game_window) {
+  /* Calculate the position for scoreboard */
+  int sub_maxy, sub_maxx, score_y_offset, score_x_offset;
+  getmaxyx(game_window, sub_maxy, sub_maxx);
+  getparyx(game_window, score_y_offset, score_x_offset);
+
+  score_y_offset += sub_maxy / 3; 
+  score_x_offset += sub_maxx + 2;
+
   grid_t output = cloneGrid(curr->grid);
 
   for (int i = 0; i < 4; i++) {
@@ -40,11 +48,17 @@ void print_state(state_t *curr, WINDOW *game_window) {
         curr->block - curr->list + 1;  // set colour to block val
   }
   print_grid(output, game_window);
-  mvprintw(0, 35, "Level : %-02d\n", curr->level.levelNum);
-  mvprintw(1, 35, "Score : %-10d\n", curr->level.score);
-  mvprintw(2, 35, "Lines : %-10d\n", curr->totalLines);
-  print_next(curr);
+  mvprintw(score_y_offset++, score_x_offset, "Level : %d\n", curr->level.levelNum);
+  mvprintw(score_y_offset++, score_x_offset, "Score : %d\n", curr->level.score);
+  mvprintw(score_y_offset++, score_x_offset, "Lines : %d\n", curr->totalLines);
+  mvprintw(score_y_offset++, score_x_offset, "Next:");
+  
+  WINDOW *item_win = subwin(stdscr, 6, 10, ++score_y_offset, score_x_offset);
+  wborder(item_win, 'f', 'k', 'u', '_', '+', '+', '+', '+');
+  touchwin(game_window);
+  print_next(curr, item_win);
 
+  wrefresh(item_win);
   refresh();
   freeGrid(output);
 }
@@ -62,11 +76,8 @@ void print_grid(grid_t grid, WINDOW *w_game) {
   touchwin(stdscr);
 }
 
-void print_next(state_t *curr) {
-  move(3, 35);
-  printw("next:\n");
+void print_next(state_t *curr, WINDOW *item_win) {
   for (int i = 0; i < 5; i++) {
-    mvprintw(i + 4, 41, "|");
     for (int j = 0; j < 5; j++) {
       bool isEmpty = true;
       for (int k = 0; k < 4; k++) {
@@ -75,12 +86,11 @@ void print_next(state_t *curr) {
 
         if (cell.x == j && cell.y == i) {
           isEmpty = false;
-          printw("%d ", curr->nextBlock - curr->list);
+          mvwprintw(item_win, i + 2, k + 1, "%d ", curr->nextBlock - curr->list);
         }
       }
-      if (isEmpty) printw("  ");
+      if (isEmpty) wprintw(item_win, "  ");
     }
-    printw("|\n");
   }
 }
 
