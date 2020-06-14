@@ -2,6 +2,7 @@
 #include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "display.h"
 
@@ -26,9 +27,10 @@ WINDOW *init_display() {
 
   cbreak();
   noecho();
-  nodelay(main, TRUE);
-  box(main, 0, 0);
   curs_set(0);
+  box(main, 0, 0);
+  nodelay(main, true);
+  key_pad(stdscr, true);
   refresh();
 
 

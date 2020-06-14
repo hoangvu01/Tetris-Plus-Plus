@@ -52,19 +52,14 @@ bool dropPiece(state_t *curr) {
 void detectInput(state_t *curr) {
   state_t teststate = *curr;
   switch (getch()) {
-    case '\033':
-      getch();  // skip the [
-      switch (getch()) {
-        case 'B':  // down
-          teststate.pos.y++;
-          break;
-        case 'C':  // right
-          teststate.pos.x++;
-          break;
-        case 'D':  // left
-          teststate.pos.x--;
-          break;
-      }
+    case KEY_DOWN:
+      teststate.pos.y++;
+      break;
+    case KEY_RIGHT:
+      teststate.pos.x++;
+      break;
+    case KEY_LEFT:
+      teststate.pos.x--;
       break;
     case 'Z':
     case 'z':
