@@ -51,7 +51,6 @@ void init_game_colour() {
   init_pair(4, COLOR_YELLOW, COLOR_YELLOW);
   init_pair(5, COLOR_MAGENTA, COLOR_MAGENTA);
   init_pair(6, COLOR_RED, COLOR_RED);
-  init_pair(7, 200, 200);
 }
 
 void printState(state_t *curr, WINDOW *game_window) {
@@ -77,7 +76,7 @@ void printState(state_t *curr, WINDOW *game_window) {
   mvprintw(score_y_offset++, score_x_offset, "Lines : %d\n", curr->totalLines);
   mvprintw(score_y_offset++, score_x_offset, "Next:");
 
-  WINDOW *item_win = subwin(stdscr, 7, 10, ++score_y_offset, score_x_offset);
+  WINDOW *item_win = subwin(stdscr, 7, 14, ++score_y_offset, score_x_offset);
   box(item_win, 0, 0);
   touchwin(game_window);
   printNext(curr, item_win);
@@ -107,14 +106,14 @@ void printNext(state_t *curr, WINDOW *item_win) {
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       bool isEmpty = true;
-      wmove(item_win, i + 1, j + 1);
+      wmove(item_win, i + 1, j * 2 + 1);
       for (int k = 0; k < 4; k++) {
         position_t cell = {2, 2};
         pplus(&cell, cell, curr->nextBlock->spins[0][k]);
 
         if (cell.x == j && cell.y == i) {
           isEmpty = false;
-          waddch(item_win, ' '| COLOR_PAIR(curr->nextBlock - curr->list + 1));
+          printSquare(item_win, curr->nextBlock - curr->list);
         }
       }
       if (isEmpty) wprintw(item_win, "  ");
