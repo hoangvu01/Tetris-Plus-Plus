@@ -40,7 +40,7 @@ void freeState(state_t *curr);
  * the rules.
  * @param curr: the current state of the game.
  */
-void detectInput(state_t *curr);
+void processInput(state_t *curr);
 
 /*
  * Pauses the current game and prints out pause message. waits for user input
