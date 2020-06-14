@@ -17,7 +17,7 @@ typedef struct {
 	grid_t grid;
 	level_t level;
 	int totalLines;
-	
+	int highScore;
 	/* information about active block */
 	tetrimino_t *nextBlock;
   tetrimino_t *block;
@@ -32,4 +32,6 @@ void pauseGame();
 bool canMove(state_t *teststate);
 bool spawnTetriminos(state_t *curr);
 bool dropPiece(state_t *curr);
+int readHighScore();
+void writeHighScore(int highScore);
 #endif
