@@ -14,4 +14,9 @@ typedef enum operations operator_t;
  */
 operator_t get_input(void);
 
+/*
+ * Initializes the GPIO PINs that are used
+ */
+void init_gpio(void);
+
 #endif

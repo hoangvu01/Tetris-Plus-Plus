@@ -1,7 +1,8 @@
 #include "gpio_button.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
-#include <wiringpi.h>
+#include <wiringPi.h>
 
 /* GPIO 4 - PIN 16 */
 #define LEFT_BUT 4
@@ -18,6 +19,7 @@ static bool all_low(void);
 static bool set;
 
 operator_t get_button(void) {
+  /* If the previous call provides an input, return NONE to avoid duplicating input */
   if (set) {
     set = !all_low();
     return NONE;
@@ -46,19 +48,26 @@ operator_t get_button(void) {
 void init_gpio_but(void) {
   if (wiringPiSetup() == -1) {
     fprintf(stderr, "Unable to initialize WiringPI\n");
-    return 1;
+    exit(EXIT_FAILURE);
   }
 
   set = false;
-  pinMode(LEFT_BUT, INPUT_PULLDOWN);
-  pinMode(RIGHT_BUT, INPUT_PULLDOWN);
-  pinMode(RLEFT_BUT, INPUT_PULLDOWN);
-  pinMode(RRIGHT_BUT, INPUT_PULLDOWN);
-  pinMode(DOWN_BUT, INPUT_PULLDOWN);
+
+  /* Initializes all used PINs to INPUT mode and pull down internal resistors */
+  pinMode(LEFT_BUT, INPUT);
+  pullUpDnControl(LEFT_BUT, PUD_DOWN);
+  pinMode(RIGHT_BUT, INPUT);
+  pullUpDnControl(RIGHT_BUT, PUD_DOWN);
+  pinMode(RLEFT_BUT, INPUT);
+  pullUpDnControl(RLEFT_BUT, PUD_DOWN);
+  pinMode(RRIGHT_BUT, INPUT);
+  pullUpDnControl(RRIGHT_BUT, PUD_DOWN);
+  pinMode(DOWN_BUT, INPUT);
+  pullUpDnControl(DOWN_BUT, PUD_DOWN);
 }
 
 static bool all_low(void) {
   return (digitalRead(LEFT_BUT) == LOW) && (digitalRead (RIGHT_BUT) == LOW)
       && (digitalRead(RLEFT_BUT) == LOW) && (digitalRead(RRIGHT_BUT) == LOW)
-      && (digitalRead(DOWN) == LOW)
+      && (digitalRead(DOWN) == LOW);
 }

@@ -4,6 +4,9 @@
 #include "gpio_button.h"
 
 operator_t get_input(void) {
-  init_gpio_but();
   return get_button();
+}
+
+void init_gpio(void) {
+  init_gpio_but();
 }

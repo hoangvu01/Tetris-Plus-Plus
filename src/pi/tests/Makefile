@@ -1,7 +1,7 @@
 CC 					= gcc
 IncludePath = -I../include
 CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
-LFLAGS 			= -lwiringpi
+LFLAGS 			= -lwiringPi
 OBJ_FILES 	= gpio_test.o gpio_input.o gpio_button.o
 
 pi: gpio_input
