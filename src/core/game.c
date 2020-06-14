@@ -40,7 +40,10 @@ void startGame(int levelNum) {
 
   freeState(curr);
   endwin();
+  
+  if (curr->level.score > curr->highScore) writeHighScore(curr->level.score);
   printf("You scored %d points. \n", curr->level.score);
+  printf("The high score is %d points. \n", readHighScore());
 }
 
 
