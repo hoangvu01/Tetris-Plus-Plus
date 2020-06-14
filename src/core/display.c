@@ -44,13 +44,14 @@ WINDOW *init_display() {
 }
 
 void init_game_colour() {
-  init_pair(0, COLOR_CYAN, COLOR_CYAN);
-  init_pair(1, COLOR_BLUE, COLOR_BLUE);
-  init_pair(2, COLOR_GREEN, COLOR_GREEN);
-  init_pair(3, COLOR_CYAN, COLOR_CYAN);
-  init_pair(4, COLOR_YELLOW, COLOR_YELLOW);
-  init_pair(5, COLOR_MAGENTA, COLOR_MAGENTA);
-  init_pair(6, COLOR_RED, COLOR_RED);
+  init_pair(0, COLOR_BLACK, COLOR_BLACK);
+  init_pair(1, COLOR_CYAN, COLOR_CYAN);
+  init_pair(2, COLOR_BLUE, COLOR_BLUE);
+  init_pair(3, COLOR_GREEN, COLOR_GREEN);
+  init_pair(4, COLOR_CYAN, COLOR_CYAN);
+  init_pair(5, COLOR_YELLOW, COLOR_YELLOW);
+  init_pair(6, COLOR_MAGENTA, COLOR_MAGENTA);
+  init_pair(7, COLOR_RED, COLOR_RED);
 }
 
 void printState(state_t *curr, WINDOW *game_window) {
@@ -113,7 +114,7 @@ void printNext(state_t *curr, WINDOW *item_win) {
 
         if (cell.x == j && cell.y == i) {
           isEmpty = false;
-          printSquare(item_win, curr->nextBlock - curr->list);
+          printSquare(item_win, curr->nextBlock - curr->list + 1);
         }
       }
       if (isEmpty) wprintw(item_win, "  ");
