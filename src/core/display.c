@@ -28,15 +28,22 @@ WINDOW *init_display() {
   cbreak();
   noecho();
   curs_set(0);
-  box(main, 0, 0);
   nodelay(main, true);
   keypad(stdscr, true);
   refresh();
 
 
   // TODO: write an offset as a function of window size
-  int y_offset = 3, x_offset = 3;
-  WINDOW *game = subwin(main, GHEIGHT, GWIDTH * 2 + 2, y_offset, x_offset);
+  int y_offset, x_offset, window_width;
+
+  int maxy, maxx;
+  getmaxyx(main, maxy, maxx);
+
+  y_offset = 0 * maxy + 3; 
+  window_width = GWIDTH * 2 + 2;
+  x_offset = maxx / 2 - window_width;
+
+  WINDOW *game = subwin(main, GHEIGHT, window_width, y_offset, x_offset);
   box(game, 0, 0);
   touchwin(stdscr);
   wrefresh(game);
