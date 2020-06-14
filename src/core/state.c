@@ -1,4 +1,5 @@
 #include "state.h"
+
 #include "display.h"
 
 state_t *initState(int levelNum) {
@@ -27,7 +28,6 @@ bool spawnTetriminos(state_t *curr) {
   if (!canMove(curr)) return false;
   return true;
 }
-
 
 bool dropPiece(state_t *curr) {
   state_t teststate = *curr;
@@ -69,8 +69,24 @@ void detectInput(state_t *curr) {
     case 'x':
       teststate.rotation = clockwise(curr->block, teststate.rotation);
       break;
+    case 'P':
+    case 'p':
+      pauseGame();
+      break;
   }
   if (canMove(&teststate)) *curr = teststate;
+}
+
+void pauseGame() {
+  timeout(-1);
+  clear();
+  char *message = "Press any key to continue game.";
+  mvprintw(getmaxy(stdscr) / 2, (getmaxx(stdscr) - strlen(message)) / 2,
+           message);
+  refresh();
+  getch();
+  nodelay(stdscr, true);
+  clear();
 }
 
 bool canMove(state_t *test) {

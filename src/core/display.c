@@ -13,6 +13,28 @@ void init_game_colour();
 void printGrid(grid_t grid, WINDOW *game_window);
 void printNext(state_t *cur, WINDOW *item_window);
 
+int startScreen() {
+  printf("\033[H\033[J"); // clears the terminal
+  printf(
+      " _____ _____ ___________ _____ _____ \n"
+      "|_   _|  ___|_   _| ___ \\_   _/  ___|\n"
+      "  | | | |__   | | | |_/ / | | \\ `--. \n"
+      "  | | |  __|  | | |    /  | |  `--. \\\n"
+      "  | | | |___  | | | |\\ \\ _| |_/\\__/ /\n"
+      "  \\_/ \\____/  \\_/ \\_| \\_|\\___/\\____/ \n\n");
+  printf("Press P to pause. \n");
+  printf("Press Z / X to rotate. \n");
+  printf("Press arrow keys to shift. \n\n");
+  int levelNum;
+
+  do {
+    printf("Please select a level between 0 and 19: ");
+    scanf("%d", &levelNum);
+  } while (levelNum < 0 || levelNum > 19);
+
+  return levelNum;
+}
+
 WINDOW *init_display() {
   WINDOW *main = initscr();
   /* Set colour properties */
@@ -44,7 +66,6 @@ WINDOW *init_display() {
   x_offset = maxx / 2 - window_width;
 
   WINDOW *game = subwin(main, GHEIGHT, window_width, y_offset, x_offset);
-  box(game, 0, 0);
   touchwin(stdscr);
   wrefresh(game);
   return game;
@@ -78,6 +99,8 @@ void printState(state_t *curr, WINDOW *game_window) {
     *(getSquare(output, cell)) =
         curr->block - curr->list + 1;  // set colour to block val
   }
+  box(game_window, 0, 0);
+
   printGrid(output, game_window);
   mvprintw(score_y_offset++, score_x_offset, "Level : %d\n", curr->level.levelNum);
   mvprintw(score_y_offset++, score_x_offset, "Score : %d\n", curr->level.score);
