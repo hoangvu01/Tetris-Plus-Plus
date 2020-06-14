@@ -7,10 +7,10 @@
 #define MODE_NUM 1
 
 /* Function pointers arrrays used to simplify the code */
-typedef void (*gpio_inits) (pi_mode_t mode);
-typedef void (*gpio_inputs) (pi_mode_t mode);
+typedef operator_t (*gpio_inputs) (void);
+typedef void (*gpio_inits) (void);
 gpio_inputs input_selector[] = {get_button};
-gpio_inits init_selector[] = {get_button};
+gpio_inits init_selector[] = {init_gpio_but};
 
 
 operator_t get_input(pi_mode_t mode) {
@@ -18,13 +18,13 @@ operator_t get_input(pi_mode_t mode) {
     fprintf(stderr, "Unknown input mode!");
     return NONE;
   }
-  return input_selector[mode];
+  return input_selector[mode]();
 }
 
 void init_gpio(pi_mode_t mode) {
   if (mode >= MODE_NUM) {
     fprintf(stderr, "Unknown input mode!");
-    return NONE;
+    return;
   }
-  return init_selector[mode];
+  init_selector[mode]();
 }
