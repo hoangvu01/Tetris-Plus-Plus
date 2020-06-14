@@ -2,12 +2,15 @@
 #include <wiringPi.h>
 #include "gpio_input.h"
 
-#define INPUT_DELAY 500
+#define INPUT_DELAY 20
 
 int main(void) {
   init_gpio(BUTTON);
   while (1) {
-    printf("%d\n", get_input(BUTTON));
+    operator_t input = get_input(BUTTON);
+    if (input != NONE) {
+      printf("%d\n",input); 
+    }
     delay(INPUT_DELAY);
   }  
 
