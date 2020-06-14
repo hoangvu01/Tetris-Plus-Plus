@@ -30,7 +30,7 @@ WINDOW *init_display() {
   curs_set(0);
   box(main, 0, 0);
   nodelay(main, true);
-  key_pad(stdscr, true);
+  keypad(stdscr, true);
   refresh();
 
 
@@ -51,6 +51,7 @@ void init_game_colour() {
   init_pair(4, COLOR_YELLOW, COLOR_YELLOW);
   init_pair(5, COLOR_MAGENTA, COLOR_MAGENTA);
   init_pair(6, COLOR_RED, COLOR_RED);
+  init_pair(7, 200, 200);
 }
 
 void printState(state_t *curr, WINDOW *game_window) {
@@ -86,7 +87,7 @@ void printState(state_t *curr, WINDOW *game_window) {
   freeGrid(output);
 }
 
-void printPiece(WINDOW *win, int colour_scheme) {
+void printSquare(WINDOW *win, int colour_scheme) {
   for (int i = 0; i < 2; i++) {
     waddch(win, ' ' | COLOR_PAIR(colour_scheme));
   }
@@ -96,7 +97,7 @@ void printGrid(grid_t grid, WINDOW *w_game) {
   for (int i = 2; i < GHEIGHT; i++) {
     wmove(w_game, i - 1, 1);
     for (int j = 0; j < GWIDTH; j++) {
-      printPiece(w_game, grid[i][j]);
+      printSquare(w_game, grid[i][j]);
     }
   }
   touchwin(stdscr);
@@ -113,7 +114,7 @@ void printNext(state_t *curr, WINDOW *item_win) {
 
         if (cell.x == j && cell.y == i) {
           isEmpty = false;
-          printPiece(item_win, curr->nextBlock - curr->list);
+          waddch(item_win, ' '| COLOR_PAIR(curr->nextBlock - curr->list + 1));
         }
       }
       if (isEmpty) wprintw(item_win, "  ");
