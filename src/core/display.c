@@ -88,7 +88,7 @@ void printState(state_t *curr, WINDOW *game_window) {
   getmaxyx(game_window, sub_maxy, sub_maxx);
   getparyx(game_window, score_y_offset, score_x_offset);
 
-  score_y_offset += sub_maxy / 3; 
+  score_y_offset += sub_maxy / 4; 
   score_x_offset += sub_maxx + 2;
 
   grid_t output = cloneGrid(curr->grid);
@@ -102,8 +102,9 @@ void printState(state_t *curr, WINDOW *game_window) {
   box(game_window, 0, 0);
 
   printGrid(output, game_window);
+  mvprintw(getpary(game_window) + 1, score_x_offset, "High Score : %d\n", curr->highScore);
+  mvprintw(score_y_offset++, score_x_offset, "Curr Score : %d\n", curr->level.score);
   mvprintw(score_y_offset++, score_x_offset, "Level : %d\n", curr->level.levelNum);
-  mvprintw(score_y_offset++, score_x_offset, "Score : %d\n", curr->level.score);
   mvprintw(score_y_offset++, score_x_offset, "Lines : %d\n", curr->totalLines);
   mvprintw(score_y_offset++, score_x_offset, "Next:");
 

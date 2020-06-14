@@ -9,6 +9,7 @@ state_t *initState(int levelNum) {
   curr->level = initLevel(levelNum);
   curr->totalLines = 0;
   curr->nextBlock = curr->list + rand() % 7;
+  curr->highScore = readHighScore();
   return curr;
 }
 
@@ -99,4 +100,26 @@ bool canMove(state_t *test) {
     if (*getSquare(test->grid, cell) != 0) return false;
   }
   return true;
+}
+
+int readHighScore(){
+  FILE *file = fopen("highscore.txt", "r");
+  if (!file) {
+    return 0;
+  }
+
+  int val;
+  fscanf(file, "%d", &val);
+  if (ferror(file)) return 0;
+
+  fclose(file);
+  return val;
+}
+
+void writeHighScore(int highScore){
+  FILE *file = fopen("highscore.txt", "w");
+  if (!file) {
+    fprintf(stderr, "write error. ");
+  }
+  fprintf(file, "%d", highScore);
 }
