@@ -8,8 +8,8 @@
 #define WINDOW_HEIGHT 30
 
 /* Return pointer to game window */
+int startScreen();
 WINDOW *init_display();
-
 void printState(state_t *curr, WINDOW *game_window);
 
 #endif

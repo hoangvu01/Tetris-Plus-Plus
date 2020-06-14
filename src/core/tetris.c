@@ -1,16 +1,11 @@
 #include "tetris.h"
+
+#include "display.h"
 #include "levels.h"
 #include "state.h"
-#include "display.h"
 
 int main(int argc, char const *argv[]) {
-  int levelNum;
-
-  do {
-    printf("Please select a level between 0 and 19: ");
-    scanf("%d", &levelNum);
-  } while (levelNum < 0 || levelNum > 19);
-
+  int levelNum = startScreen();
   WINDOW *game_win = init_display();
 
   state_t *curr = initState(levelNum);
@@ -19,7 +14,6 @@ int main(int argc, char const *argv[]) {
   timespec_t now, lastFrame;
   unsigned long frameNum = 0;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &lastFrame);
-
 
   while (1) {
     updateFrame(&now, &lastFrame, &frameNum);

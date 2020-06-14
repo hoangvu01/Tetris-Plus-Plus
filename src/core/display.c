@@ -13,6 +13,28 @@ void init_game_colour();
 void printGrid(grid_t grid, WINDOW *game_window);
 void printNext(state_t *cur, WINDOW *item_window);
 
+int startScreen() {
+  printf("\033[H\033[J"); // clears the terminal
+  printf(
+      " _____ _____ ___________ _____ _____ \n"
+      "|_   _|  ___|_   _| ___ \\_   _/  ___|\n"
+      "  | | | |__   | | | |_/ / | | \\ `--. \n"
+      "  | | |  __|  | | |    /  | |  `--. \\\n"
+      "  | | | |___  | | | |\\ \\ _| |_/\\__/ /\n"
+      "  \\_/ \\____/  \\_/ \\_| \\_|\\___/\\____/ \n\n");
+  printf("Press P to pause. \n");
+  printf("Press Z / X to rotate. \n");
+  printf("Press arrow keys to shift. \n\n");
+  int levelNum;
+
+  do {
+    printf("Please select a level between 0 and 19: ");
+    scanf("%d", &levelNum);
+  } while (levelNum < 0 || levelNum > 19);
+
+  return levelNum;
+}
+
 WINDOW *init_display() {
   WINDOW *main = initscr();
   /* Set colour properties */
