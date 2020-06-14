@@ -22,7 +22,7 @@ WINDOW *init_display() {
   }
   start_color();
   init_game_colour();
-  wbkgd(stdscr, COLOR_PAIR(0));
+  wbkgd(stdscr, COLOR_BLACK);
 
   cbreak();
   noecho();
@@ -35,14 +35,14 @@ WINDOW *init_display() {
   // TODO: write an offset as a function of window size
   int y_offset = 3, x_offset = 3;
   WINDOW *game = subwin(main, GHEIGHT, GWIDTH * 2 + 2, y_offset, x_offset);
-  box(game, '*', '*');
+  box(game, 0, 0);
   touchwin(stdscr);
   wrefresh(game);
   return game;
 }
 
 void init_game_colour() {
-  init_pair(0, COLOR_BLACK, COLOR_BLACK);
+  init_pair(0, COLOR_CYAN, COLOR_CYAN);
   init_pair(1, COLOR_BLUE, COLOR_BLUE);
   init_pair(2, COLOR_GREEN, COLOR_GREEN);
   init_pair(3, COLOR_CYAN, COLOR_CYAN);
@@ -74,8 +74,8 @@ void printState(state_t *curr, WINDOW *game_window) {
   mvprintw(score_y_offset++, score_x_offset, "Lines : %d\n", curr->totalLines);
   mvprintw(score_y_offset++, score_x_offset, "Next:");
 
-  WINDOW *item_win = subwin(stdscr, 6, 10, ++score_y_offset, score_x_offset);
-  wborder(item_win, '|', '|', '-', '-', '+', '+', '+', '+');
+  WINDOW *item_win = subwin(stdscr, 7, 10, ++score_y_offset, score_x_offset);
+  box(item_win, 0, 0);
   touchwin(game_window);
   printNext(curr, item_win);
 
@@ -84,35 +84,38 @@ void printState(state_t *curr, WINDOW *game_window) {
   freeGrid(output);
 }
 
+void printPiece(WINDOW *win, int colour_scheme) {
+  for (int i = 0; i < 2; i++) {
+    waddch(win, ' ' | COLOR_PAIR(colour_scheme));
+  }
+}
 
 void printGrid(grid_t grid, WINDOW *w_game) {
   for (int i = 2; i < GHEIGHT; i++) {
     wmove(w_game, i - 1, 1);
     for (int j = 0; j < GWIDTH; j++) {
-      waddch(w_game, ' ' | COLOR_PAIR(grid[i][j]));
-      waddch(w_game, ' ' | COLOR_PAIR(grid[i][j]));
+      printPiece(w_game, grid[i][j]);
     }
   }
   touchwin(stdscr);
 }
 
 void printNext(state_t *curr, WINDOW *item_win) {
-  /*
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
       bool isEmpty = true;
+      wmove(item_win, i + 1, j + 1);
       for (int k = 0; k < 4; k++) {
         position_t cell = {2, 2};
         pplus(&cell, cell, curr->nextBlock->spins[0][k]);
 
         if (cell.x == j && cell.y == i) {
           isEmpty = false;
-          mvwprintw(item_win, i + 2, k + 1, "%d ", curr->nextBlock - curr->list);
+          printPiece(item_win, curr->nextBlock - curr->list);
         }
       }
       if (isEmpty) wprintw(item_win, "  ");
     }
   }
-  */
 }
 
