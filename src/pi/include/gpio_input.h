@@ -13,12 +13,14 @@ typedef enum pi_modes pi_mode_t;
 
 /*
  * Get the input from Raspberry PI's GPIO input
+ * @param mode: Sets the type of input from Raspberry PI
  * @returns: An enum for the operation
  */
 operator_t get_input(pi_mode_t mode);
 
 /*
  * Initializes the GPIO PINs that are used
+ * @param mode: Sets the type of input from Raspberry PI
  */
 void init_gpio(pi_mode_t mode);
 

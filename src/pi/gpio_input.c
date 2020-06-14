@@ -5,6 +5,8 @@
 #include "gpio_button.h"
 
 #define MODE_NUM 1
+
+/* Function pointers arrrays used to simplify the code */
 typedef void (*gpio_inits) (pi_mode_t mode);
 typedef void (*gpio_inputs) (pi_mode_t mode);
 gpio_inputs input_selector[] = {get_button};
