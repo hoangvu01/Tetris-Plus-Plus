@@ -69,5 +69,5 @@ void init_gpio_but(void) {
 static bool all_low(void) {
   return (digitalRead(LEFT_BUT) == LOW) && (digitalRead (RIGHT_BUT) == LOW)
       && (digitalRead(RLEFT_BUT) == LOW) && (digitalRead(RRIGHT_BUT) == LOW)
-      && (digitalRead(DOWN) == LOW);
+      && (digitalRead(DOWN_BUT) == LOW);
 }
