@@ -19,8 +19,6 @@ grid_t initGrid();
 
 grid_t cloneGrid(grid_t grid);
 
-void printGrid(grid_t grid);
-
 colour_t *getSquare(grid_t grid, position_t p);
 
 int clearLines(grid_t grid);

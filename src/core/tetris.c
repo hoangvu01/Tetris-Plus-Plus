@@ -1,6 +1,7 @@
 #include "tetris.h"
 #include "levels.h"
 #include "state.h"
+#include "display.h"
 
 int main(int argc, char const *argv[]) {
   int levelNum;
@@ -10,13 +11,8 @@ int main(int argc, char const *argv[]) {
     scanf("%d", &levelNum);
   } while (levelNum < 0 || levelNum > 19);
 
-  WINDOW *w = initscr();
-  cbreak();
-  nodelay(w, TRUE);
-  noecho();
-  curs_set(0);
-  keypad(stdscr, true);
-  
+  WINDOW *game_win = init_display();
+
   state_t *curr = initState(levelNum);
   bool hasMoving = false;
 
@@ -32,7 +28,7 @@ int main(int argc, char const *argv[]) {
       if (!spawnTetriminos(curr)) break;
       hasMoving = true;
     }
-    printState(curr);
+    printState(curr, game_win);
     detectInput(curr);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);

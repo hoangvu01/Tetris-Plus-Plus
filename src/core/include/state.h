@@ -26,11 +26,9 @@ typedef struct {
 } state_t;
 
 state_t *initState();
-void printState(state_t *curr);
 void freeState(state_t *curr);
 void detectInput(state_t *curr);
 bool canMove(state_t *teststate);
 bool spawnTetriminos(state_t *curr);
 bool dropPiece(state_t *curr);
-void printNext(state_t *curr);
 #endif
