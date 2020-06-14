@@ -28,7 +28,7 @@ int main(int argc, char const *argv[]) {
       if (!spawnTetriminos(curr)) break;
       hasMoving = true;
     }
-    print_state(curr, game_win);
+    printState(curr, game_win);
     detectInput(curr);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);

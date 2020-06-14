@@ -10,6 +10,6 @@
 /* Return pointer to game window */
 WINDOW *init_display();
 
-void print_state(state_t *curr, WINDOW *game_window);
+void printState(state_t *curr, WINDOW *game_window);
 
 #endif

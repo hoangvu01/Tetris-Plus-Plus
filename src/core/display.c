@@ -9,8 +9,8 @@
 #define WIN_MIN_HEIGHT 40
 
 void init_game_colour();
-void print_grid(grid_t grid, WINDOW *game_window);
-void print_next(state_t *cur, WINDOW *item_window);
+void printGrid(grid_t grid, WINDOW *game_window);
+void printNext(state_t *cur, WINDOW *item_window);
 
 WINDOW *init_display() {
   WINDOW *main = initscr();
@@ -51,7 +51,7 @@ void init_game_colour() {
   init_pair(6, COLOR_RED, COLOR_RED);
 }
 
-void print_state(state_t *curr, WINDOW *game_window) {
+void printState(state_t *curr, WINDOW *game_window) {
   /* Calculate the position for scoreboard */
   int sub_maxy, sub_maxx, score_y_offset, score_x_offset;
   getmaxyx(game_window, sub_maxy, sub_maxx);
@@ -68,23 +68,24 @@ void print_state(state_t *curr, WINDOW *game_window) {
     *(getSquare(output, cell)) =
         curr->block - curr->list + 1;  // set colour to block val
   }
-  print_grid(output, game_window);
+  printGrid(output, game_window);
   mvprintw(score_y_offset++, score_x_offset, "Level : %d\n", curr->level.levelNum);
   mvprintw(score_y_offset++, score_x_offset, "Score : %d\n", curr->level.score);
   mvprintw(score_y_offset++, score_x_offset, "Lines : %d\n", curr->totalLines);
   mvprintw(score_y_offset++, score_x_offset, "Next:");
-  
+
   WINDOW *item_win = subwin(stdscr, 6, 10, ++score_y_offset, score_x_offset);
   wborder(item_win, '|', '|', '-', '-', '+', '+', '+', '+');
   touchwin(game_window);
-  print_next(curr, item_win);
+  printNext(curr, item_win);
 
   wrefresh(item_win);
   refresh();
   freeGrid(output);
 }
 
-void print_grid(grid_t grid, WINDOW *w_game) {
+
+void printGrid(grid_t grid, WINDOW *w_game) {
   for (int i = 2; i < GHEIGHT; i++) {
     wmove(w_game, i - 1, 1);
     for (int j = 0; j < GWIDTH; j++) {
@@ -95,7 +96,7 @@ void print_grid(grid_t grid, WINDOW *w_game) {
   touchwin(stdscr);
 }
 
-void print_next(state_t *curr, WINDOW *item_win) {
+void printNext(state_t *curr, WINDOW *item_win) {
   /*
   for (int i = 0; i < 5; i++) {
     for (int j = 0; j < 5; j++) {
