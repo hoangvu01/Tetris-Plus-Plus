@@ -4,7 +4,7 @@
 #include "gpio_input.h"
 #include "gpio_button.h"
 
-#define MODE_NUM 1
+#define MODE_NUM 2
 
 /* Function pointers arrrays used to simplify the code */
 typedef operator_t (*gpio_inputs) (void);
@@ -13,16 +13,16 @@ gpio_inputs input_selector[] = {get_button};
 gpio_inits init_selector[] = {init_gpio_but};
 
 
-operator_t get_input(pi_mode_t mode) {
-  if (mode >= MODE_NUM) {
+operator_t gpio_input(inmode_t mode) {
+  if ((mode == KEY_BOARD) || (mode >= MODE_NUM)) {
     fprintf(stderr, "Unknown input mode!");
     return NONE;
   }
   return input_selector[mode]();
 }
 
-void init_gpio(pi_mode_t mode) {
-  if (mode >= MODE_NUM) {
+void init_gpio(inmode_t mode) {
+  if ((mode == KEY_BOARD) || (mode >= MODE_NUM)) {
     fprintf(stderr, "Unknown input mode!");
     return;
   }

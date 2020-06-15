@@ -8,26 +8,18 @@ OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
 LIB_HEADERS = $(addprefix -I, $(wildcard $(LIB_DIR)/*/.)) $(addprefix -I, $(wildcard $(LIB_DIR)/*/include))
 
 CC          = gcc
-IncludePath = -Iinclude -I../common/include -I../pi/include$(LIB_HEADERS)
+IncludePath = -Iinclude -I../common/include -I../core/include$(LIB_HEADERS)
 CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
-LFLAGS      = -lncurses $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
+LFLAGS      = -lwiringPi $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
 
-all: libs $(BIN_DIR)/tetris
-
-$(BIN_DIR)/tetris: $(OBJ_FILES)
-	$(CC) $^ $(LFLAGS) -o $@
+all: $(OBJ_FILES)
 
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-libs:
-	cd $(LIB_DIR); make
-
 clean:
 	rm -f $(wildcard $(OBJ_DIR)/*.o)
-	rm -f $(BIN_DIR)/tetris
 	cd tests; make clean
-	cd $(LIB_DIR); make clean
 
 .SUFFIXES: .c .o .h
 .PHONY: clean test libs

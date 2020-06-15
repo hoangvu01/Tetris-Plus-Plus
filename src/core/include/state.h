@@ -24,6 +24,11 @@ typedef struct {
   int rotation;
 } state_t;
 
+enum operations {NONE, LEFT, RIGHT, RLEFT, RRIGHT, DOWN, PAUSE};
+typedef enum operations operator_t;
+enum modes {KEY_BOARD, PI_BUTTON};
+typedef enum modes inmode_t;
+
 /*
  * @returns: A heap allocated struct describing the state of the game.
  */
@@ -40,7 +45,7 @@ void freeState(state_t *curr);
  * the rules.
  * @param curr: the current state of the game.
  */
-void processInput(state_t *curr);
+void processInput(state_t *curr, inmode_t mode);
 
 /*
  * Pauses the current game and prints out pause message. waits for user input

@@ -10,6 +10,7 @@
 #include "state.h"
 
 #define FRAME_RATE 60
+#define GAME_MODE KEY_BOARD
 
 typedef struct timespec timespec_t;
 
@@ -33,7 +34,7 @@ void startGame(int levelNum) {
       hasMoving = true;
     }
     printState(curr, game_win);
-    processInput(curr);
+    processInput(curr, GAME_MODE);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);
   }
