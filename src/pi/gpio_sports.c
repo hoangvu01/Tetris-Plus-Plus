@@ -19,7 +19,10 @@
 #define ultra_range(time) ((time > 0) && (time < 800))
 #define FLAG_COUNT 10
 
-static int left;
+#define LEFT_PLUG_IN
+#define RLEFT_PLUG_IN
+
+static int left, right, rleft, rright;
 
 /*
  * Detects the distance measured by an ultrasound sensor in centimeter.
@@ -27,16 +30,51 @@ static int left;
 static int detect_ultrasound(int ultrasound_sensor);
 
 operator_t get_sports(void) {
-  int distance = detect_ultrasound(LEFT_ULTRASOUND);
 
-  if (ultra_range(distance) && (left == 0)){
-    left = FLAG_COUNT;
-    return LEFT;
-  }
+  #ifdef LEFT_PLUG_IN
+    int distance_l = detect_ultrasound(LEFT_ULTRASOUND);
+    if (ultra_range(distance_l) && (left == 0)){
+      left = FLAG_COUNT;
+      return LEFT;
+    }
+    if (!ultra_range(distance_l) && (left > 0)) {
+      left--;
+    }
+  #endif
 
-  if (!ultra_range(distance) && (left > 0)) {
-    left--;
-  }
+  #ifdef RIGHT_PLUG_IN
+    int distance_r = detect_ultrasound(RIGHT_ULTRASOUND);
+    if (ultra_range(distance_r) && (right == 0)){
+      right = FLAG_COUNT;
+      return RIGHT;
+    }
+    if (!ultra_range(distance_r) && (right > 0)) {
+      right--;
+    }
+  #endif
+
+  #ifdef RLEFT_PLUG_IN
+    int ir_left = digitalRead(RLEFT_IRSENSOR);
+    if (ir_left == HIGH) && (rleft == 0) {
+      rleft = 1;
+      return RLEFT;
+    }
+    if (ir_left == LOW) && (rleft > 0) {
+      rleft == 0;
+    }
+  #endif
+
+  #ifdef RRIGHT_PLUG_IN
+    int ir_right = digitalRead(RRIGHT_IRSENSOR);
+    if (ir_right == HIGH) && (rright == 0) {
+      rright = 1;
+      return RRIGHT;
+    }
+    if (ir_right == LOW) && (rright > 0) {
+      rright == 0;
+    }
+  #endif
+
   return NONE;
 }
 
@@ -56,6 +94,9 @@ void init_gpio_sp(void) {
 
   /* Initializes all flag variables to 0 */
   left = 0;
+  right = 0;
+  rleft = 0;
+  rright = 0;
 }
 
 static int detect_ultrasound(int ultrasound_sensor) {
@@ -72,4 +113,3 @@ static int detect_ultrasound(int ultrasound_sensor) {
   
   return end.tv_usec - start.tv_usec;
 }
-
