@@ -46,7 +46,7 @@ static void merge(param_state_t *param_array[], int l, int m, int r) {
 
     int i = 0, j = 0, k = l;
     while (i < n1 && j < n2) {
-        if (L[i]->loss <= R[j]->loss) {
+        if (L[i]->loss >= R[j]->loss) {
             param_array[k] = L[i];
             i++;
         } else {
@@ -98,7 +98,23 @@ int get_aggregate_height(grid_t grid) {
 }
 
 int get_complete_line(grid_t grid) {
-    return clearLines(grid);
+    int completedlines = 0;
+    /* clears top buffers */
+    for (int i = 0; i < 2; i++) {
+        memset(grid[i], 0x00, GWIDTH * sizeof(colour_t));
+    }
+
+    for (int i = 2; i < GHEIGHT; i++) {
+        bool isComplete = true;
+        for (int j = 0; j < GWIDTH; j++) {
+            if (grid[i][j] == 0) isComplete = false;
+        }
+
+        if (isComplete) {
+            completedlines++;
+        }
+    }
+    return completedlines;
 }
 
 int get_hole_number(grid_t grid) {

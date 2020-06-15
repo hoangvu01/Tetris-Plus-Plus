@@ -11,8 +11,8 @@ int main(void) {
         compute_loss(param_array[i], 5, 200);
         printf("Loss successfully computed for param vec %d\n", i);
     }
-
-    //print_and_save_result(param_array, 1);
+    sort_param_array(param_array, 0, ARRAY_SIZE - 1);
+    print_and_save_result(param_array, 1);
 
     int count = 0;
     while(count < 1000) {
@@ -20,16 +20,18 @@ int main(void) {
             param_state_t **fittest = select_fittest(param_array, ARRAY_SIZE, 0.3, 2);
             generate_child(fittest, param_array, ARRAY_SIZE);
         }
-        printf("Computing loss of new parameter vectors...");
+        printf("Computing loss of new parameter vectors...\n");
         for (int i = 0; param_array[i] != NULL; i++) {
             compute_loss(param_array[i], 5, 200);
         }
+        sort_param_array(param_array, 0, ARRAY_SIZE - 1);
 
         double total_loss = 0;
         for (int i = 0; i < ARRAY_SIZE; i++) {
             total_loss += param_array[i]->loss;
         }
-        printf("Average Loss= %f", total_loss);
+        printf("Average Loss= %f\n", total_loss);
+        print_and_save_result(param_array, 1);
         count++;
     }
 }
@@ -105,7 +107,7 @@ void compute_loss(param_state_t *param, int iterations, int max_pieces) {
             loss += clearLines(state->grid);
         }
         param_loss += loss;
-        freeState(state);
+        //freeState(state);
     }
     param->loss = param_loss;
 }
@@ -116,7 +118,7 @@ param_state_t **select_fittest(param_state_t **param_array, int array_size, doub
     for (int i = 0; i < sample_size; i++) {
         sample[i] = param_array[randomInteger(0, sample_size - 1)];
     }
-    sort_param_array(sample, 0, sample_size);
+    sort_param_array(sample, 0, sample_size - 1);
     sample = realloc(sample, (num + 1) * sizeof(param_state_t *));
     sample[num] = NULL;
 
@@ -149,5 +151,5 @@ void generate_child(param_state_t **prev_param_array, param_state_t **param_arra
     }
     normalize(param);
     param_array[array_size - 1] = param;
-    sort_param_array(param_array, 0, array_size);
+    sort_param_array(param_array, 0, array_size - 1);
 }
