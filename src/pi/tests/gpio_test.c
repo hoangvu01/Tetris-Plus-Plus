@@ -6,9 +6,9 @@
 #define INPUT_DELAY 20
 
 int main(void) {
-  init_gpio(PI_BUTTON);
+  init_gpio(PI_SPORTS);
   while (1) {
-    operator_t input = gpio_input(PI_BUTTON);
+    operator_t input = gpio_input(PI_SPORTS);
     if (input != NONE) {
       printf("%d\n",input); 
     }

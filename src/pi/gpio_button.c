@@ -38,10 +38,10 @@ operator_t get_button(void) {
   if (digitalRead(RRIGHT_BUT) == HIGH) {
     return RRIGHT;
   }
+  set = false;
   if (digitalRead(DOWN_BUT) == HIGH) {
     return DOWN;
   }
-  set = false;
   return NONE;
 }
 
