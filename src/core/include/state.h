@@ -30,6 +30,11 @@ typedef struct {
 state_t *initState();
 
 /*
+ * Clone the current state
+ */
+state_t *cloneState(state_t *clone);
+
+/*
  * Frees the state_t specified.
  * @param curr: the current state of the game.
  */

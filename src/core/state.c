@@ -13,6 +13,15 @@ state_t *initState(int levelNum) {
   return curr;
 }
 
+state_t *cloneState(state_t *state) {
+    state_t *new_state = malloc(sizeof(state_t));
+    memcpy(new_state, state, sizeof(state_t));
+    new_state->grid = cloneGrid(state->grid);
+    new_state->list = initTetrimino;
+    new_state->nextBlock = new_state->list + state->nextBlock - state->list;
+    new_state->block = new_state->list + state->block - state->list;
+}
+
 void freeState(state_t *curr) {
   freeGrid(curr->grid);
   freeTetriminos(curr->list);
