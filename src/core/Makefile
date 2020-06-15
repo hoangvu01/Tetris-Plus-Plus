@@ -3,8 +3,9 @@ BIN_DIR     = $(PROJ)/bin
 LIB_DIR     = $(PROJ)/lib
 OBJ_DIR     = $(PROJ)/obj
 
+PI_FILES    = $(OBJ_DIR)/gpio_button.o $(OBJ_DIR)/gpio_input.o $(OBJ_DIR)/gpio_sports.o
 SRC_FILES   = $(wildcard *.c) 
-OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES)) $(OBJ_DIR)/gpio_button.o $(OBJ_DIR)/gpio_input.o
+OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES)) $(PI_FILES)
 LIB_HEADERS = $(addprefix -I, $(wildcard $(LIB_DIR)/*/.)) $(addprefix -I, $(wildcard $(LIB_DIR)/*/include))
 
 CC          = gcc

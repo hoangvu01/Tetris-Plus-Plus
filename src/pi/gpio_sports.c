@@ -16,13 +16,27 @@
 /* GPIO 0 - PIN 11 */
 #define ULTRASOUND_TRIGGER 0
 
+#define ultra_range(time) ((time > 0) && (time < 800))
+#define FLAG_COUNT 10
+
+static int left;
+
 /*
  * Detects the distance measured by an ultrasound sensor in centimeter.
  */
 static int detect_ultrasound(int ultrasound_sensor);
 
 operator_t get_sports(void) {
-  detect_ultrasound(LEFT_ULTRASOUND);
+  int distance = detect_ultrasound(LEFT_ULTRASOUND);
+
+  if (ultra_range(distance) && (left == 0)){
+    left = FLAG_COUNT;
+    return LEFT;
+  }
+
+  if (!ultra_range(distance) && (left > 0)) {
+    left--;
+  }
   return NONE;
 }
 
@@ -39,21 +53,23 @@ void init_gpio_sp(void) {
   pinMode(RRIGHT_IRSENSOR, INPUT);
   pinMode(DOWN_SOUND, INPUT);
   pinMode(ULTRASOUND_TRIGGER, OUTPUT);
+
+  /* Initializes all flag variables to 0 */
+  left = 0;
 }
 
 static int detect_ultrasound(int ultrasound_sensor) {
   struct timeval start, end;
   
   digitalWrite(ULTRASOUND_TRIGGER, HIGH);
-  delayMicroseconds(20);
+  delayMicroseconds(10);
   digitalWrite(ULTRASOUND_TRIGGER, LOW);
 
-  gettimeofday(&start, NULL);
-  while (digitalRead(ultrasound_sensor) == LOW);
+  while (digitalRead(ultrasound_sensor) == LOW)
+    gettimeofday(&start, NULL);
   while (digitalRead(ultrasound_sensor) == HIGH);
-  gettimeofday(&end, NULL);
+    gettimeofday(&end, NULL);
   
-  int delta = end.tv_usec - start.tv_usec;
-  printf("%d", delta);
-  return 0;
+  return end.tv_usec - start.tv_usec;
 }
+

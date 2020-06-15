@@ -10,10 +10,13 @@ gpio_input: $(OBJ_FILES)
 	$(CC) $(CFLAGS) $(OBJ_FILES) -o gpio_test $(LFLAGS)
 
 gpio_input.o: ../gpio_input.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 gpio_button.o: ../gpio_button.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 gpio_sports.o: ../gpio_sports.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f *.o gpio_test
