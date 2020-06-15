@@ -24,6 +24,9 @@
 *.out
 *_test
 bin/tetris
+bin/gtrain
+bin/rltrain
+bin/tetrispi
 
 #ignore junk files from running C code
 *.txt
