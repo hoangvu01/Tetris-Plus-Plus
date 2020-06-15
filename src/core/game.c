@@ -9,6 +9,10 @@
 #include "levels.h"
 #include "state.h"
 
+#ifndef CLOCK_PROCESS_CPUTIME_ID
+#define CLOCK_PROCESS_CPUTIME_ID 2
+#endif
+
 #define FRAME_RATE 60
 
 typedef struct timespec timespec_t;
