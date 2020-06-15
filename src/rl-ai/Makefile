@@ -8,17 +8,20 @@ OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
 LIB_HEADERS = $(addprefix -I, $(wildcard $(LIB_DIR)/*/.)) $(addprefix -I, $(wildcard $(LIB_DIR)/*/include))
 
 CC          = gcc
-IncludePath = -Iinclude $(LIB_HEADERS)
+IncludePath = -Iinclude -I../core/include $(LIB_HEADERS)
 CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
 LFLAGS      = -lncurses $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
 
-all: libs $(BIN_DIR)/tetris
+all: libs tetris $(BIN_DIR)/train
 
-$(BIN_DIR)/tetris: $(OBJ_FILES)
+$(BIN_DIR)/train: $(OBJ_FILES)
 	$(CC) $^ $(LFLAGS) -o $@
 
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+tetris:
+	cd ../core; make
 
 libs:
 	cd $(LIB_DIR); make
