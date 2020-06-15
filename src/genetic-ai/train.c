@@ -77,7 +77,9 @@ double best_move(state_t *state, param_state_t *param, tetrimino_t *best_block, 
                             - param->bumpiness_w*get_bumpiness(state->grid)
                             + param->complete_line_w*get_complete_line(state->grid);
             } else {
-                curr_loss = best_move(state, param, best_block, index + 1, total);
+                state_t *cloned_state = cloneState(state);
+                spawnTetriminos(cloned_state);
+                curr_loss = best_move(cloned_state, param, best_block, index + 1, total);
             }
 
             if (curr_loss > best_loss) {

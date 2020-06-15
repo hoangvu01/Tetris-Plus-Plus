@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "param.h"
+#include "levels.h"
 #include "grid.h"
 #include "state.h"
 #include "tetriminos.h"
