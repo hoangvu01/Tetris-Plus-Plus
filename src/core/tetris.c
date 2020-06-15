@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "display.h"
 #include "game.h"
 
