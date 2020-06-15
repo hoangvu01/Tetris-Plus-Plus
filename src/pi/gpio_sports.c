@@ -33,7 +33,7 @@ operator_t get_sports(void) {
 
   #ifdef LEFT_PLUG_IN
     int distance_l = detect_ultrasound(LEFT_ULTRASOUND);
-    if (ultra_range(distance_l) && (left == 0)){
+    if (ultra_range(distance_l) && (left == 0)) {
       left = FLAG_COUNT;
       return LEFT;
     }
@@ -44,7 +44,7 @@ operator_t get_sports(void) {
 
   #ifdef RIGHT_PLUG_IN
     int distance_r = detect_ultrasound(RIGHT_ULTRASOUND);
-    if (ultra_range(distance_r) && (right == 0)){
+    if (ultra_range(distance_r) && (right == 0)) {
       right = FLAG_COUNT;
       return RIGHT;
     }
@@ -55,23 +55,23 @@ operator_t get_sports(void) {
 
   #ifdef RLEFT_PLUG_IN
     int ir_left = digitalRead(RLEFT_IRSENSOR);
-    if (ir_left == HIGH) && (rleft == 0) {
+    if ((ir_left == HIGH) && (rleft == 0)) {
       rleft = 1;
       return RLEFT;
     }
-    if (ir_left == LOW) && (rleft > 0) {
-      rleft == 0;
+    if ((ir_left == LOW) && (rleft > 0)) {
+      rleft = 0;
     }
   #endif
 
   #ifdef RRIGHT_PLUG_IN
     int ir_right = digitalRead(RRIGHT_IRSENSOR);
-    if (ir_right == HIGH) && (rright == 0) {
+    if ((ir_right == HIGH) && (rright == 0)) {
       rright = 1;
       return RRIGHT;
     }
-    if (ir_right == LOW) && (rright > 0) {
-      rright == 0;
+    if ((ir_right == LOW) && (rright > 0)) {
+      rright = 0;
     }
   #endif
 
