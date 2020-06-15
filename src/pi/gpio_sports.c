@@ -75,6 +75,13 @@ operator_t get_sports(void) {
     }
   #endif
 
+  #ifdef SOUND_PLUG_IN
+    int sound = digitalRead(DOWN_SOUND);
+    if (sound == LOW) {
+      return DOWN;
+    }
+  #endif
+
   return NONE;
 }
 
