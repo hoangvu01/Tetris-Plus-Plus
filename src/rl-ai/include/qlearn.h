@@ -3,24 +3,17 @@
 #ifndef Q_LEARN_H
 #define Q_LEARN_H
 
+#include <limits.h>
 #include <time.h>
 #include <unistd.h>
 
-#include "game.h"
-#include "state.h"
-#include "grid.h"
-#include "hash_table.h"
-#include "display.h"
+#include "qtable.h"
+#include "env_defns.h"
 
-
-typedef struct {
-  long reward; 
-  state_t env;
-} q_data_t;
 
 void play(q_data_t *data);
 
-int make_action(q_data_t *, state_t *);
+void step(q_data_t *, state_t *);
 
 
 #endif
