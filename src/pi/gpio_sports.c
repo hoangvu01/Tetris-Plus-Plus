@@ -82,7 +82,7 @@ operator_t get_sports(void) {
     }
   #endif
 
-  #if defined SOUND_PLUG_IN || || defined ALL_PLUG_IN
+  #if defined SOUND_PLUG_IN || defined ALL_PLUG_IN
     int sound = digitalRead(DOWN_SOUND);
     if (sound == LOW) {
       return DOWN;

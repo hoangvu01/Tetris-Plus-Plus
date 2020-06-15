@@ -34,7 +34,8 @@ void init_gpio_dr(void) {
   }
 
   /* Initializes the I2C system */
-  printf("%d", wiringPiI2CSetup(DEVICE));
+  int fd = wiringPiI2CSetup(DEVICE);
+  printf("%d\n",fd); 
   wiringPiI2CWriteReg8(fd, ADDR_WRITE, POWER_ON);
   wiringPiI2CWriteReg8(fd, ADDR_WRITE, RESET);
   wiringPiI2CWriteReg8(fd, ADDR_WRITE, MODE_LOW);
