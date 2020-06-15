@@ -9,8 +9,8 @@
 /* Function pointers arrrays used to simplify the code */
 typedef operator_t (*gpio_inputs) (void);
 typedef void (*gpio_inits) (void);
-gpio_inputs input_selector[] = {get_button};
-gpio_inits init_selector[] = {init_gpio_but};
+gpio_inputs input_selector[] = {NULL, get_button};
+gpio_inits init_selector[] = {NULL, init_gpio_but};
 
 
 operator_t gpio_input(inmode_t mode) {

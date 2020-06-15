@@ -2,7 +2,7 @@ all:
 	cd core; make
 
 pi:
-	cd pi; make; cd ..; all
+	cd pi; make; cd ..; make all
 
 clean:
 	cd core; make clean

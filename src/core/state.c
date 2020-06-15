@@ -3,6 +3,8 @@
 #include "display.h"
 #include "gpio_input.h"
 
+#define PI_MODE
+
 state_t *initState(int levelNum) {
   state_t *curr = malloc(sizeof(state_t));
   curr->grid = initGrid();

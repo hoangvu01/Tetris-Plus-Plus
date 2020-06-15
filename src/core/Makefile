@@ -3,14 +3,14 @@ BIN_DIR     = $(PROJ)/bin
 LIB_DIR     = $(PROJ)/lib
 OBJ_DIR     = $(PROJ)/obj
 
-SRC_FILES   = $(wildcard *.c)
-OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
+SRC_FILES   = $(wildcard *.c) 
+OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES)) $(OBJ_DIR)/gpio_button.o $(OBJ_DIR)/gpio_input.o
 LIB_HEADERS = $(addprefix -I, $(wildcard $(LIB_DIR)/*/.)) $(addprefix -I, $(wildcard $(LIB_DIR)/*/include))
 
 CC          = gcc
 IncludePath = -Iinclude -I../common/include -I../pi/include$(LIB_HEADERS)
 CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
-LFLAGS      = -lncurses $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
+LFLAGS      = -lncurses -lwiringPi $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
 
 all: libs $(BIN_DIR)/tetris
 
