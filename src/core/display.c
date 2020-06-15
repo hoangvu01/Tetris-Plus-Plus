@@ -36,7 +36,7 @@ int startScreen() {
 }
 
 WINDOW *init_display() {
-  WINDOW *main = initscr();
+  WINDOW *main_win = initscr();
   /* Set colour properties */
   if (!has_colors()) {
     fprintf(stderr, "You must enable colour terminal");
@@ -50,7 +50,7 @@ WINDOW *init_display() {
   cbreak();
   noecho();
   curs_set(0);
-  nodelay(main, true);
+  nodelay(main_win, true);
   keypad(stdscr, true);
   refresh();
 
@@ -59,13 +59,13 @@ WINDOW *init_display() {
   int y_offset, x_offset, window_width;
 
   int maxy, maxx;
-  getmaxyx(main, maxy, maxx);
+  getmaxyx(main_win, maxy, maxx);
 
   y_offset = 0 * maxy + 3; 
   window_width = GWIDTH * 2 + 2;
   x_offset = maxx / 2 - window_width;
 
-  WINDOW *game = subwin(main, GHEIGHT, window_width, y_offset, x_offset);
+  WINDOW *game = subwin(main_win, GHEIGHT, window_width, y_offset, x_offset);
   touchwin(stdscr);
   wrefresh(game);
   return game;
