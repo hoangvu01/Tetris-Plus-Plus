@@ -18,7 +18,7 @@ typedef struct {
   state_t env;
 } q_data_t;
 
-void play();
+void play(q_data_t *data);
 
 int make_action(q_data_t *, state_t *);
 
