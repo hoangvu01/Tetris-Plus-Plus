@@ -19,12 +19,14 @@
 /* High Resolution Sampling (1lx) */
 #define MODE_HIGH 0x10
 
-
 /* ID for the I2C device on a Respberry PI 3b */
 #define DEVICE 1
 
+static fd = 0;
+
 operator_t get_driving(void) {
-  return NONE;
+  int res = wiringPiI2CReadReg8(fd, ADDR_READ);
+  printf("%d\n", res);
 }
 
 void init_gpio_dr(void) {
@@ -34,7 +36,7 @@ void init_gpio_dr(void) {
   }
 
   /* Initializes the I2C system */
-  int fd = wiringPiI2CSetup(DEVICE);
+  fd = wiringPiI2CSetup(DEVICE);
   printf("%d\n",fd); 
   wiringPiI2CWriteReg8(fd, ADDR_WRITE, POWER_ON);
   wiringPiI2CWriteReg8(fd, ADDR_WRITE, RESET);
