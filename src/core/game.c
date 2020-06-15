@@ -1,20 +1,5 @@
-#include <ncurses.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
+#include "game.h"
 
-#include "display.h"
-#include "levels.h"
-#include "state.h"
-
-#define FRAME_RATE 60
-
-typedef struct timespec timespec_t;
-
-void updateFrame(timespec_t *now, timespec_t *lastFrame,
-                 unsigned long *frameNum); 
 
 void startGame(int levelNum) {
   WINDOW *game_win = init_display();
@@ -33,7 +18,8 @@ void startGame(int levelNum) {
       hasMoving = true;
     }
     printState(curr, game_win);
-    processInput(curr);
+    int key = getInput();
+    processInput(curr, key);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);
   }

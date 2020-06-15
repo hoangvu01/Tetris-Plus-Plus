@@ -10,6 +10,7 @@
 #include "levels.h"
 #include "tetriminos.h"
 
+
 typedef struct {
   /* list of all tetrimino and grid of static blocks */
   tetrimino_t *list;
@@ -40,7 +41,8 @@ void freeState(state_t *curr);
  * the rules.
  * @param curr: the current state of the game.
  */
-void processInput(state_t *curr);
+int getInput(); 
+void processInput(state_t *curr, int key);
 
 /*
  * Pauses the current game and prints out pause message. waits for user input

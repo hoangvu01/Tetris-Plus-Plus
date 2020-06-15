@@ -8,7 +8,7 @@ OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
 LIB_HEADERS = $(addprefix -I, $(wildcard $(LIB_DIR)/*/.)) $(addprefix -I, $(wildcard $(LIB_DIR)/*/include))
 
 CC          = gcc
-IncludePath = -Iinclude $(LIB_HEADERS)
+IncludePath = -Iinclude $(LIB_HEADERS) 
 CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
 LFLAGS      = -lncurses $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
 

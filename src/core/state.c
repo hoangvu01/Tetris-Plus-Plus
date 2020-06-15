@@ -1,5 +1,4 @@
 #include "state.h"
-
 #include "display.h"
 
 state_t *initState(int levelNum) {
@@ -50,14 +49,13 @@ bool dropPiece(state_t *curr) {
   }
 }
 
-int getInput(){
-  // TODO: implement this to support both PC and Pi
+int getInput() {
   return getch();
 }
 
-void processInput(state_t *curr) {
+void processInput(state_t *curr, int key) {
   state_t teststate = *curr;
-  switch (getInput()) {
+  switch (key) {
     case KEY_DOWN:
       teststate.pos.y++;
       break;
