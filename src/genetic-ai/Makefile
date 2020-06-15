@@ -2,9 +2,10 @@ PROJ        = ../..
 BIN_DIR     = $(PROJ)/bin
 LIB_DIR     = $(PROJ)/lib
 OBJ_DIR     = $(PROJ)/obj/genetic-ai
+CORE_OBJ_DIR = $(PROJ)/obj/core
 
 SRC_FILES   = $(wildcard *.c)
-OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
+OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES)) $(CORE_OBJ_DIR)/state.o $(CORE_OBJ_DIR)/grid.o $(CORE_OBJ_DIR)/tetriminos.o
 LIB_HEADERS = $(addprefix -I, $(wildcard $(LIB_DIR)/*/.)) $(addprefix -I, $(wildcard $(LIB_DIR)/*/include))
 
 CC          = gcc
@@ -20,9 +21,11 @@ $(BIN_DIR)/train: $(OBJ_FILES)
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+$(CORE_OBJ_DIR)/%.o:
+	make -C $(PROJ)/src/core $@
+
 libs:
-	cd $(LIB_DIR); make
-	cd ../core; make
+	make -C $(LIB_DIR)
 
 clean:
 	rm -f $(wildcard $(OBJ_DIR)/*.o)
