@@ -1,8 +1,8 @@
-#include "gpio_button.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <wiringPi.h>
+#include "gpio_button.h"
 
 /* GPIO 4 - PIN 16 */
 #define LEFT_BUT 4
@@ -15,7 +15,9 @@
 /* GPIO 25 - PIN 37 */
 #define DOWN_BUT 25
 
+/* Check whether all buttons are not pressed */
 static bool all_low(void);
+/* Flag that avoids duplicated inputs */
 static bool set;
 
 operator_t get_button(void) {
@@ -38,6 +40,7 @@ operator_t get_button(void) {
   if (digitalRead(RRIGHT_BUT) == HIGH) {
     return RRIGHT;
   }
+  /* Clear set flag to allow duplicated inputs from DOWN_BUTTON */
   set = false;
   if (digitalRead(DOWN_BUT) == HIGH) {
     return DOWN;

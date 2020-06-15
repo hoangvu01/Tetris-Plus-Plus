@@ -4,11 +4,12 @@
 #include "state.h"
 
 #define INPUT_DELAY 20
+#define TEST_UNIT PI_DRIVING
 
 int main(void) {
-  init_gpio(PI_SPORTS);
+  init_gpio(TEST_UNIT);
   while (1) {
-    operator_t input = gpio_input(PI_SPORTS);
+    operator_t input = gpio_input(TEST_UNIT);
     if (input != NONE) {
       printf("%d\n",input); 
     }

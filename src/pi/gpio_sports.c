@@ -1,7 +1,7 @@
+#include <stdio.h>
+#include <wiringPi.h>
 #include "gpio_sports.h"
 #include "sys/time.h"
-#include <wiringPi.h>
-#include <stdio.h>
 
 /* GPIO 4 - PIN 16 */
 #define LEFT_ULTRASOUND 4
@@ -16,22 +16,29 @@
 /* GPIO 0 - PIN 11 */
 #define ULTRASOUND_TRIGGER 0
 
+/* Time interval for ultrasound reflection that is considered in range*/
 #define ultra_range(time) ((time > 0) && (time < 800))
+/* Special flag used to avoid duplicated inputs. Optimized for the behavior of sensors */
 #define FLAG_COUNT 10
 
+/* Specifies which sensors are plugged in */
 #define LEFT_PLUG_IN
 #define RLEFT_PLUG_IN
+// #define ALL_PLUG_IN
 
+/* Flags used to avoid duplicated inputs */
 static int left, right, rleft, rright;
 
 /*
- * Detects the distance measured by an ultrasound sensor in centimeter.
+ * Detects the distance measured by an ultrasound sensor
+ * @param ultrasound_sensor: PIN number for the ultrasound sensor
+ * @returns: Time taken for the ultrasound to travel and bounce back (in microsecond)
  */
 static int detect_ultrasound(int ultrasound_sensor);
 
 operator_t get_sports(void) {
 
-  #ifdef LEFT_PLUG_IN
+  #if defined LEFT_PLUG_IN || defined ALL_PLUG_IN
     int distance_l = detect_ultrasound(LEFT_ULTRASOUND);
     if (ultra_range(distance_l) && (left == 0)) {
       left = FLAG_COUNT;
@@ -42,7 +49,7 @@ operator_t get_sports(void) {
     }
   #endif
 
-  #ifdef RIGHT_PLUG_IN
+  #if defined RIGHT_PLUG_IN || defined ALL_PLUG_IN
     int distance_r = detect_ultrasound(RIGHT_ULTRASOUND);
     if (ultra_range(distance_r) && (right == 0)) {
       right = FLAG_COUNT;
@@ -53,7 +60,7 @@ operator_t get_sports(void) {
     }
   #endif
 
-  #ifdef RLEFT_PLUG_IN
+  #if defined RLEFT_PLUG_IN || defined ALL_PLUG_IN
     int ir_left = digitalRead(RLEFT_IRSENSOR);
     if ((ir_left == HIGH) && (rleft == 0)) {
       rleft = 1;
@@ -64,7 +71,7 @@ operator_t get_sports(void) {
     }
   #endif
 
-  #ifdef RRIGHT_PLUG_IN
+  #if defined RRIGHT_PLUG_IN || defined ALL_PLUG_IN
     int ir_right = digitalRead(RRIGHT_IRSENSOR);
     if ((ir_right == HIGH) && (rright == 0)) {
       rright = 1;
@@ -75,7 +82,7 @@ operator_t get_sports(void) {
     }
   #endif
 
-  #ifdef SOUND_PLUG_IN
+  #if defined SOUND_PLUG_IN || || defined ALL_PLUG_IN
     int sound = digitalRead(DOWN_SOUND);
     if (sound == LOW) {
       return DOWN;
@@ -109,10 +116,12 @@ void init_gpio_sp(void) {
 static int detect_ultrasound(int ultrasound_sensor) {
   struct timeval start, end;
   
+  /* Sends an ultrasound signal  */
   digitalWrite(ULTRASOUND_TRIGGER, HIGH);
   delayMicroseconds(10);
   digitalWrite(ULTRASOUND_TRIGGER, LOW);
 
+  /* Detects the ultrasound signal and calculates delta time */
   while (digitalRead(ultrasound_sensor) == LOW)
     gettimeofday(&start, NULL);
   while (digitalRead(ultrasound_sensor) == HIGH);
