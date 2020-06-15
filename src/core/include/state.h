@@ -10,6 +10,9 @@
 #include "levels.h"
 #include "tetriminos.h"
 
+#define PI_MODE
+#define GAME_MODE PI_BUTTON 
+
 typedef struct {
   /* list of all tetrimino and grid of static blocks */
   tetrimino_t *list;

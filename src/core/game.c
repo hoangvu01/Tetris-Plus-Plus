@@ -11,7 +11,6 @@
 #include "gpio_input.h"
 
 #define FRAME_RATE 60
-#define GAME_MODE PI_BUTTON 
 
 typedef struct timespec timespec_t;
 
