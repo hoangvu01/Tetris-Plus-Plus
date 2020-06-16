@@ -105,7 +105,8 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
                 } else {
                     old_block = init_block_from_state(new_state);
                     //print_block(old_block);
-                    spawnTetriminos(new_state);
+                    new_state->block = new_state->nextBlock;
+                    new_state->pos.y = 2;
                     new_state->nextBlock = NULL;
                     curr_loss = immutable_best_move(new_state, param, NULL, total_lines_cleared);
                 }
