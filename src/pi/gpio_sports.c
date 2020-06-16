@@ -22,8 +22,9 @@
 #define FLAG_COUNT 10
 
 /* Specifies which sensors are plugged in */
-#define LEFT_PLUG_IN
-#define RLEFT_PLUG_IN
+//#define LEFT_PLUG_IN
+//#define RLEFT_PLUG_IN
+#define SOUND_PLUG_IN
 // #define ALL_PLUG_IN
 
 /* Flags used to avoid duplicated inputs */

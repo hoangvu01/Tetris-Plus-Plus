@@ -26,8 +26,8 @@
 #define GYRO_Z 0x47
 
 /* Thresholds for acceleration and gyro-acceleration detection  */
-#define accel_thres(acc) ((acc < -30000) || (acc > 30000))
-#define gyro_thres(gacc) ((gacc < -4000) || (gacc > 4000))
+#define accel_thres(acc) ((acc < -15000) || (acc > 15000))
+#define gyro_thres(gacc) ((gacc < -3000) || (gacc > 3000))
 
 /* Gravity's contribution to the acceleration, assuming the controllers are held straight */
 #define ACCEL_G 16960
@@ -38,8 +38,13 @@ static short read_data(int fd, int addr);
 /* Variable that avoids duplicated inputs */
 #define FLAG_COUNT 25
 static int set;
+static int down_count;
 
 operator_t get_rythms(void) {
+  if (down_count > 0) {
+    down_count--;
+    return DOWN;
+  }
   if (--set > 0) {
     return NONE; 
   }
@@ -68,6 +73,7 @@ operator_t get_rythms(void) {
     return RIGHT;
   }
   if (accel_thres(ly) && accel_thres(ry)) {
+    down_count = 5;
     return DOWN;
   }
   if (accel_thres(lz) && accel_thres(rz)) {
@@ -84,6 +90,7 @@ void init_gpio_ry(void) {
   }
   
   set = 0;
+  down_count = 0;
   fd_l = wiringPiI2CSetup(LEFT_DEV_ADDR);
   fd_r = wiringPiI2CSetup(RIGHT_DEV_ADDR);
 

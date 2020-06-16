@@ -4,7 +4,7 @@
 #include "state.h"
 
 #define INPUT_DELAY 20
-#define TEST_UNIT PI_RYTHMS
+#define TEST_UNIT PI_SPORTS 
 
 int main(void) {
   init_gpio(TEST_UNIT);
