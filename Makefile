@@ -19,7 +19,7 @@ PILIBS      = -lwiringPi
 
 all: core genetic pi rl lib
 core:     bin/tetris
-genetic:  bin/gtrain
+genetic:  bin/genetic-ai-play
 rl:       bin/rltrain
 pi:       bin/tetrispi
 
@@ -29,8 +29,8 @@ bin/tetris: $(CORE_OBJS)
 bin/tetrispi: $(PI_OBJS) $(CORE_OBJS)
 	$(CC) $^ $(LDLIBS) $(PILIBS) -o $@
 
-bin/gtrain: $(GENE_OBJS) $(CORE_NO_MAIN)
-	$(CC) $^ $(LDLIBS) -lomp -o $@
+bin/genetic-ai-play: $(GENE_OBJS) $(filter-out obj/core/game.o, $(CORE_NO_MAIN))
+	$(CC) $^ $(LDLIBS) -fopenmp -o $@
 
 bin/rltrain: $(RL_OBJS) $(CORE_NO_MAIN)
 	$(CC) $^ $(LDLIBS) -o $@
@@ -57,7 +57,7 @@ lib:
 clean:
 	rm -f $(DEPS)
 	rm -f $(CORE_OBJS) $(GENE_OBJS) $(RL_OBJS) $(PI_OBJS)
-	rm -f  bin/tetris bin/gtrain bin/rltrain bin/tetrispi
+	rm -f  bin/tetris bin/genetic-ai-play bin/rltrain bin/tetrispi
 	cd lib; make clean
 
 .PHONY: src clean lib core genetic pi rl
