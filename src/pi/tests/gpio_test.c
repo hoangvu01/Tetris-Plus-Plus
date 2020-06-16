@@ -3,7 +3,7 @@
 #include "gpio_input.h"
 #include "state.h"
 
-#define INPUT_DELAY 200
+#define INPUT_DELAY 20
 #define TEST_UNIT PI_RYTHMS
 
 int main(void) {
