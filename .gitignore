@@ -22,6 +22,7 @@
 #ignore junk files from compiling C code
 *.o
 *.out
+*_test
 bin/tetris
 
 #ignore junk files from running C code
