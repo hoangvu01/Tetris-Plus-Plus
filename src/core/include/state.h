@@ -30,6 +30,12 @@ typedef struct {
 state_t *initState();
 
 /*
+ * Clone the current state. This function will produce a deeply cloned copy
+ * @return: return the deep cloned state
+ */
+state_t *cloneState(const state_t *clone);
+
+/*
  * Frees the state_t specified.
  * @param curr: the current state of the game.
  */

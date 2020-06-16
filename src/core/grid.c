@@ -24,10 +24,7 @@ grid_t cloneGrid(grid_t grid) {
   return clone;
 }
 
-
-colour_t *getSquare(grid_t grid, position_t p) {
-   return &(grid[p.y][p.x]); 
-   }
+colour_t *getSquare(grid_t grid, position_t p) { return &(grid[p.y][p.x]); }
 
 void freeGrid(grid_t grid) {
   for (int i = 0; i < GHEIGHT; i++) {

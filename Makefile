@@ -13,6 +13,7 @@ DEPS = $(CORE_OBJS:%.o=%.d) $(GENE_OBJS:%.o=%.d) $(RL_OBJS:%.o=%.d) $(PI_OBJS:%.
 CC          = gcc
 IncludePath = $(addprefix -I, $(wildcard src/*/include)) 
 CFLAGS      = -MMD -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
+GENEFLAGS   = -DLLVM_ENABLE_ASSERTIONS=On -Xpreprocessor -fopenmp -O3
 LDLIBS      = -lncurses -lm
 PILIBS      = -lwiringPi 
 
@@ -29,7 +30,7 @@ bin/tetrispi: $(PI_OBJS) $(CORE_OBJS)
 	$(CC) $^ $(LDLIBS) $(PILIBS) -o $@
 
 bin/gtrain: $(GENE_OBJS) $(CORE_NO_MAIN)
-	$(CC) $^ $(LDLIBS) -o $@
+	$(CC) $^ $(LDLIBS) -lomp -o $@
 
 bin/rltrain: $(RL_OBJS) $(CORE_NO_MAIN)
 	$(CC) $^ $(LDLIBS) -o $@
@@ -41,7 +42,7 @@ obj/core/%.o: src/core/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 obj/genetic-ai/%.o: src/genetic-ai/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(GENEFLAGS) -c -o $@ $<
 
 obj/rl-ai/%.o: src/rl-ai/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
