@@ -7,9 +7,10 @@
 /* Device Address for the LEFT Controller */
 #define LEFT_DEV_ADDR 0x68
 /* Device Address for the RIGHT Controller */
+/* AD0 PIN for the RIGHT Controller should be connected to VCC */
 #define RIGHT_DEV_ADDR 0x69
 
-/* MPU6050 Accelerometer Registers Addresses*/
+/* MPU6050 Accelerometer Registers Addresses */
 #define POWER_MNMT 0x6B
 #define SAMPLE_RT 0x19
 #define CONFIG 0x1A
@@ -22,11 +23,41 @@
 #define GYRO_Y 0x45
 #define GYRO_Z 0x47
 
+#define accel_thres(acc) ((acc < -10000) || (acc > 10000))
+#define gyro_thres(gacc) ((gacc < -10000) || (gacc > 10000))
+
 static int fd_l, fd_r;
 static short read_data(int fd, int addr);
 
 operator_t get_rythms(void) {
-  printf("Left Y:%d; Right Y:%d\n", read_data(fd_l, ACCEL_Y), read_data(fd_r, ACCEL_Y));
+  /* Reads data from  */
+  int lx = read_data(fd_l, ACCEL_X);
+  int ly = read_data(fd_l, ACCEL_Y);
+  int lz = read_data(fd_l, ACCEL_Z);
+  int rx = read_data(fd_r, ACCEL_X);
+  int ry = read_data(fd_r, ACCEL_Y);
+  int rz = read_data(fd_r, ACCEL_Z);
+  int lrz = read_data(fd_l, GYRO_Z);
+  int rrz = read_data(fd_r, GYRO_Z);
+
+  if (accel_thres(ly)) {
+    return LEFT;
+  }
+  if (accel_thres(ry)) {
+    return RIGHT;
+  }
+  if (gyro_thres(lrz)) {
+    return RLEFT;
+  }
+  if (gyro_thres(rrz)) {
+    return RRIGHT;
+  }
+  if (accel_thres(lx) && accel_thres(rx)) {
+    return DOWN;
+  }
+  if (accel_thres(lz) && accel_thres(rz)) {
+    return PAUSE;
+  }
   return NONE;
 }
 
