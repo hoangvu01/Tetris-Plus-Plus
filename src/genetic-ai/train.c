@@ -9,10 +9,10 @@
 const int n_iterations = 5;
 const int n_pieces = 500;
 
-int main(int argc, char **argv) {
+void train(char *filename) {
     param_state_t **param_array = NULL;
-    if (argc == 2) {
-      param_array = read_param_from_file(argv[1], ARRAY_SIZE);
+    if (filename != NULL) {
+      param_array = read_param_from_file(filename, ARRAY_SIZE);
     } else {
       param_array = init_param_array(ARRAY_SIZE);
     }
@@ -83,7 +83,7 @@ param_state_t **init_param_array(int size) {
 // find out the best move without altering the state
 double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared) {
     double best_loss = -INFINITY;
-    
+
     /* try different rotation/direction */
     for (int i = 0; i < state->block->num_spin; i++) {
         for (int j = 0; j < GWIDTH; j++) {

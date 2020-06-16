@@ -29,6 +29,12 @@ param_state_t *generate_random_param();
 param_state_t **init_param_array(int size);
 
 /*
+ * @brief: helper function for best_move. Used in play.c as well
+ */
+
+double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared);
+
+/*
  * @brief: calculate the best move from the given block and grid layout with the given parameter vector
  * @param: state_t *state: the current state of the game (see state.h in core folder)
  * @param: param_state_t *param: the given parameter vector used in calculating loss
