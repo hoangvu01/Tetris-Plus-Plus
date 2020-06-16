@@ -2,6 +2,8 @@
 #include <wiringPi.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include <stdbool.h>
 #include "gpio_rythms.h"
 
 /* Device Address for the LEFT Controller */
@@ -24,26 +26,34 @@
 #define GYRO_Z 0x47
 
 /* Thresholds for acceleration and gyro-acceleration detection  */
-#define accel_thres(acc) ((acc < -20000) || (acc > 20000))
-#define gyro_thres(gacc) ((gacc < -15000) || (gacc > 15000))
+#define accel_thres(acc) ((acc < -12000) || (acc > 12000))
+#define gyro_thres(gacc) ((gacc < -12000) || (gacc > 12000))
 
 /* Gravity's contribution to the acceleration, assuming the controllers are held straight */
-#define gravity 16960
+#define ACCEL_G 16960
 
 static int fd_l, fd_r;
 static short read_data(int fd, int addr);
 
+/* Variable that avoids duplicated inputs */
+static int set;
+
 operator_t get_rythms(void) {
+  if (--set > 0) {
+    return NONE; 
+  }
+
   /* Reads data from  */
   int lx = read_data(fd_l, ACCEL_X);
-  int ly = read_data(fd_l, ACCEL_Y);
+  int ly = read_data(fd_l, ACCEL_Y) - ACCEL_G;
   int lz = read_data(fd_l, ACCEL_Z);
   int rx = read_data(fd_r, ACCEL_X);
-  int ry = read_data(fd_r, ACCEL_Y);
+  int ry = read_data(fd_r, ACCEL_Y) - ACCEL_G;
   int rz = read_data(fd_r, ACCEL_Z);
   int lrz = read_data(fd_l, GYRO_Z);
   int rrz = read_data(fd_r, GYRO_Z);
 
+  set = 10;
   if (gyro_thres(lrz)) {
     return RLEFT;
   }
@@ -62,6 +72,7 @@ operator_t get_rythms(void) {
   if (accel_thres(lz) && accel_thres(rz)) {
     return PAUSE;
   }
+  set = 0;
   return NONE;
 }
 
@@ -70,7 +81,8 @@ void init_gpio_ry(void) {
     fprintf(stderr, "Unable to initialize WiringPI\n");
     exit(EXIT_FAILURE);
   }
-
+  
+  set = 0;
   fd_l = wiringPiI2CSetup(LEFT_DEV_ADDR);
   fd_r = wiringPiI2CSetup(RIGHT_DEV_ADDR);
 
