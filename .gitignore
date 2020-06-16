@@ -2,6 +2,7 @@
 
 #ignore temp files
 *~
+*.d
 
 #ignore pdf files (just keep source files)
 *.pdf
@@ -23,7 +24,6 @@
 *.o
 *.out
 *_test
-bin/tetris
 bin/*
 
 #ignore junk files from running C code
