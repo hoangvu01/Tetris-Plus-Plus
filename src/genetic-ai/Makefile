@@ -13,9 +13,9 @@ IncludePath = -Iinclude -I../core/include $(LIB_HEADERS)
 CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath) -DLLVM_ENABLE_ASSERTIONS=On -Xpreprocessor -fopenmp -O3
 LFLAGS      = -lncurses -lomp  $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
 
-all: libs $(BIN_DIR)/play
+all: libs $(BIN_DIR)/genetic-ai-play
 
-$(BIN_DIR)/aiplay: $(OBJ_FILES)
+$(BIN_DIR)/genetic-ai-play: $(OBJ_FILES)
 	$(CC) $^ $(LFLAGS) -o $@
 
 $(OBJ_DIR)/%.o: %.c
