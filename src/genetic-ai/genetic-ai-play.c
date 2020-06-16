@@ -18,7 +18,6 @@ static param_state_t *param_p = &param;
 
 int main(void) {
   int levelNum = startScreen();
-  srand(time(0));
   startGame(levelNum);
   return EXIT_SUCCESS;
 }
