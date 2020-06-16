@@ -34,7 +34,7 @@ bin/gtrain: $(GENE_OBJS) $(CORE_NO_MAIN)
 bin/rltrain: $(RL_OBJS) $(CORE_NO_MAIN)
 	$(CC) $^ $(LDLIBS) -o $@
 
-# Automatic header dependency inclusion by pre processor
+# pre-processor automatically adds headers as dependencies
 -include $(DEPS)
 
 obj/core/%.o: src/core/%.c
