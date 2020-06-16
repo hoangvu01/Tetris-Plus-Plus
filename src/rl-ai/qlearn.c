@@ -1,6 +1,6 @@
 #include "qlearn.h"
 
-#define LEVEL 1 
+#define LEVEL 19 
 
 #define NO_ACTIONS 6
 
@@ -10,10 +10,12 @@
 #define EPSILON 0.1
 
 #define A (-0.01)
-#define B  (0.5)
-#define C (-0.01)
-#define D (-0.01)
+#define B (5)
+#define C (-0.1)
+#define D (-0.1)
 #define E (0.1)
+
+#define randfloat() ((float) rand() / (float) RAND_MAX)
 
 static void evaluate_grid(grid_t grid, int *heights, double *score);
 static void evaluate_heights(state_t *curr, int *heights, double *score);
@@ -47,6 +49,10 @@ void evaluate_grid(grid_t grid, int *heights, double *score) {
   wprintw(stdscr, "Holes: %d\n", hole_penalty);
   wprintw(stdscr, "CL: %d\n", complete_line);
   
+  // fprintf(stdout, "\n");
+  // fprintf(stdout, "Holes: %d\n", hole_penalty);
+  // fprintf(stdout, "CL: %d\n", complete_line);
+  
   *score = A * hole_penalty + B * complete_line; 
 }
 
@@ -70,10 +76,14 @@ void evaluate_heights(state_t *curr, int *heights, double *score) {
   for (int i = 0; i < GWIDTH; i++) wprintw(stdscr, "%d ", heights[i]);
   wprintw(stdscr, "]\n");
 
+  // fprintf(stdout, "H: [");
+  // for (int i = 0; i < GWIDTH; i++) fprintf(stdout, "%d ", heights[i]);
+  // fprintf(stdout, "]\n");
+  
   *score += C * aggr_height + D * bumpiness;
 }
 
-void play(q_data_t *data) {
+int play(q_data_t *data) {
   WINDOW *game_win = init_display();
   state_t *curr = initState(LEVEL);
   bool hasMoving = false;
@@ -95,47 +105,54 @@ void play(q_data_t *data) {
       hasMoving = dropPiece(curr);
   }
   freeState(curr);
-  endwin();
-
-  if (curr->level.score > curr->highScore) writeHighScore(curr->level.score);
-  printf("You scored %d points. \n", curr->level.score);
-  printf("The high score is %d points. \n", readHighScore());
+  return curr->level.score;
 }
 
+int get_optimal_move(q_data_t *data, env_t *env, double **actions) {
+  double *q_actions = find_qtable(data->qtable, env);
+  if (q_actions == NULL) {
+    q_actions = calloc(NO_ACTIONS, sizeof(double));
+    insert_qtable(data->qtable, env, (void *) q_actions);
+  }
+  int move = 0;
+  for (int i = 1; i < NO_ACTIONS; i++){
+    if (q_actions[move] < q_actions[i]) move = i;
+  } 
+
+  *actions = q_actions;
+  return move;
+}
 
 void step(q_data_t *data, state_t *curr) {
-  int move, *actions;
-  double score;
-  
-  float random = (float) rand() / (float) RAND_MAX;
+  int move;
+  double reward, **actions = malloc(sizeof(double *));
   env_t *env = malloc(sizeof(env_t));
+  if (env == NULL) return;
+  
   env->block = curr->block;
   env->list = curr->list;
   env->grid = curr->grid;
  
-  actions = find_qtable(data->qtable, env);
-  if (random < EPSILON || actions == NULL) {
-    actions = malloc(sizeof(int) * NO_ACTIONS);
-    for (int i = 0; i < NO_ACTIONS; i++)
-      actions[i] = INT_MIN;
-    move = rand() % NO_ACTIONS;
-  } else {
-    move = actions[0]; 
-    for (int i = 1; i < NO_ACTIONS; i++){
-      if (move < actions[i]) move = i;
-    }  
-  }
-  
-  processInput(curr, actions_space[move]);
+  move = get_optimal_move(data, env, actions);
+  if (randfloat() < EPSILON) 
+   move = rand() % NO_ACTIONS;
 
+  processInput(curr, actions_space[move]);
   int *heights = calloc(GWIDTH, sizeof(int));
-  evaluate_state(curr, heights, &score);  
-  wprintw(stdscr, "Score: %f\n", score);
+  evaluate_state(curr, heights, &reward);  
+ 
+  wprintw(stdscr, "Old score: %f\n", (*actions)[move]);
+  wprintw(stdscr, "Reward: %f\n", reward);
+  // fprintf(stdout, "Score: %f\n", score);
   if (data->prev_score == curr->level.score) {
-    score -= 0.01;
+    reward -= 0.01;
   }
+  data->prev_score = curr->level.score;
   
-  actions[move] = score;
+  double next_max = get_optimal_move(data, env, actions);
+  double new_score = (1 - ALPHA) * (*actions)[move] + ALPHA * (reward + GAMMA * next_max); 
+  (*actions)[move] = new_score;
+  
   free(heights);
 }
 

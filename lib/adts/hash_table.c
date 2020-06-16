@@ -30,6 +30,11 @@ typedef struct hash_table {
   hashfunc hashcode;
 } hash_table ;
 
+typedef struct hash_table_itr {
+  hash_table *table;
+  int index;
+} hash_table_itr;
+
 /* Helper function for using hash to index into array */
 static int get_hash_index(hash_table *table, void *key) {
   int hash = table->hashcode(key);
@@ -189,3 +194,34 @@ void *hash_find(hash_table *table, void *key) {
   return NULL;
 }
 
+hash_table_itr *get_hash_table_itr(hash_table *table) {
+  hash_table_itr *itr = malloc(sizeof(hash_table_itr));
+  assert_not_null(itr);
+  int index = 0;
+  while (table->arr[index] == NULL && index < table->max_size){
+    index++;
+  } 
+
+  itr->index = index;
+  itr->table = table;
+  return itr;
+}
+
+bool hash_iterator_hasnext(hash_table_itr *itr) {
+  return itr->index < itr->table->max_size;
+}
+
+void *hash_iterator_next(hash_table_itr *itr, void *key) {
+  if (itr->index > itr->table->max_size) return NULL;
+
+  hashnode *cur = itr->table->arr[itr->index++];
+  void *res = cur->value;
+  memcpy(key, cur->key, cur->key_size);
+
+  while (itr->index < itr->table->max_size) {
+    if (itr->table->arr[itr->index] == NULL) 
+      itr->index++;
+    else break;  
+  }
+  return res;
+}

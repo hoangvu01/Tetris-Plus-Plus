@@ -9,7 +9,9 @@
 
 typedef struct hash_table hash_table;
 
-typedef int (*hashfunc) (void *);
+typedef struct hash_table_itr hash_table_itr;
+
+typedef long (*hashfunc) (void *);
 
 /*  
  *  Create a generic linked table 
@@ -49,5 +51,13 @@ void free_hashtable(hash_table *table);
 /* Returns key if present, NULL otherwise */
 void *hash_find(hash_table *table, void *key);
 
+/* Returns an iterator */
+hash_table_itr *get_hash_table_itr(hash_table *);
+
+/* Checks if iterator has next element */
+bool hash_iterator_hasnext(hash_table_itr *);
+
+/* Returns non-empty element and write key to given pointer */
+void *hash_iterator_next(hash_table_itr *, void *key);
 
 #endif

@@ -7,7 +7,7 @@
 
 #define INITIAL_SIZE 20
 
-static int hash(void *ptr) {
+static long hash(void *ptr) {
   char *str = (char *) ptr;
   int hashcode = 0;
   for (int i = 0; i < strlen(str); i++) {
@@ -16,7 +16,7 @@ static int hash(void *ptr) {
   return hashcode % 5381;
 }
 
-static int symbol_comparator(void *this, void *that) {
+static long symbol_comparator(void *this, void *that) {
   return strcmp((char *) this, (char *) that);
 }
 

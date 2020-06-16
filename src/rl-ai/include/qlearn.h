@@ -10,8 +10,10 @@
 #include "qtable.h"
 #include "env_defns.h"
 
+#include "display.h"
+#include "game.h"
 
-void play(q_data_t *data);
+int play(q_data_t *data);
 
 void step(q_data_t *, state_t *);
 
