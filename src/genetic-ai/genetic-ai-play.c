@@ -1,5 +1,5 @@
 #include <time.h>
-#include "play.h"
+#include "genetic-ai-play.h"
 #include "display.h"
 #include "state.h"
 #include "levels.h"
