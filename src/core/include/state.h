@@ -11,7 +11,7 @@
 #include "tetriminos.h"
 
 #define PI_MODE
-#define GAME_MODE PI_BUTTON 
+#define GAME_MODE PI_RYTHMS 
 
 typedef struct {
   /* list of all tetrimino and grid of static blocks */
