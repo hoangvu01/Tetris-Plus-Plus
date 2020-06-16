@@ -1,5 +1,4 @@
 #include "state.h"
-
 #include "display.h"
 #include "gpio_input.h"
 
@@ -12,6 +11,16 @@ state_t *initState(int levelNum) {
   curr->nextBlock = curr->list + rand() % 7;
   curr->highScore = readHighScore();
   return curr;
+}
+
+state_t *cloneState(const state_t *state) {
+    state_t *new_state = malloc(sizeof(state_t));
+    memcpy(new_state, state, sizeof(state_t));
+    new_state->grid = cloneGrid(state->grid);
+    new_state->list = initTetrimino();
+    new_state->nextBlock = new_state->list + (state->nextBlock - state->list);
+    new_state->block = new_state->list + (state->block - state->list);
+    return new_state;
 }
 
 void freeState(state_t *curr) {

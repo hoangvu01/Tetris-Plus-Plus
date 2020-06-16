@@ -1,25 +1,26 @@
-#include <ncurses.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
-
+#include "genetic-ai-play.h"
 #include "display.h"
-#include "levels.h"
 #include "state.h"
-#include "gpio_input.h"
-
-#ifndef CLOCK_PROCESS_CPUTIME_ID
-#define CLOCK_PROCESS_CPUTIME_ID 2
-#endif
+#include "levels.h"
 
 #define FRAME_RATE 60
 
 typedef struct timespec timespec_t;
 
-void updateFrame(timespec_t *now, timespec_t *lastFrame,
-                 unsigned long *frameNum); 
+void startGame(int levelNum);
+void updateFrame(timespec_t *now, timespec_t *lastFrame, unsigned long *frameNum);
+/* This parameter has been trained over the following config:
+ * max_piece = 500, iterations = 5
+ */
+static param_state_t param = {0.553276, 0.271804, 0.753433, 0.228793, 191};
+static param_state_t *param_p = &param;
+
+int main(void) {
+  int levelNum = startScreen();
+  startGame(levelNum);
+  return EXIT_SUCCESS;
+}
 
 void startGame(int levelNum) {
   WINDOW *game_win = init_display();
@@ -29,32 +30,30 @@ void startGame(int levelNum) {
   timespec_t now, lastFrame;
   unsigned long frameNum = 0;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &lastFrame);
-  
-  #ifdef PI_MODE
-    init_gpio(GAME_MODE);
-  #endif
 
   while (1) {
     updateFrame(&now, &lastFrame, &frameNum);
 
     if (!hasMoving) {
       if (!spawnTetriminos(curr)) break;
+      block_t best_block;
+      immutable_best_move(curr, param_p, &best_block, 0);
+      set_state_by_block(curr, &best_block);
+      curr->pos.y = 2;
       hasMoving = true;
     }
     printState(curr, game_win);
-    processInput(curr, GAME_MODE);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);
   }
 
   freeState(curr);
   endwin();
-  
+
   if (curr->level.score > curr->highScore) writeHighScore(curr->level.score);
   printf("You scored %d points. \n", curr->level.score);
   printf("The high score is %d points. \n", readHighScore());
 }
-
 
 void updateFrame(timespec_t *now, timespec_t *lastFrame,
                  unsigned long *frameNum) {

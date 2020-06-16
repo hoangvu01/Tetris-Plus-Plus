@@ -65,3 +65,4 @@ int antiClockwise(tetrimino_t *tetrimino, int curr);
 void pplus(position_t *dst, position_t base, position_t shift);
 
 #endif
+
