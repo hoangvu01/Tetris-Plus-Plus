@@ -5,15 +5,16 @@
 #include "gpio_button.h"
 #include "gpio_sports.h"
 #include "gpio_driving.h"
+#include "gpio_rythms.h"
 
 /* Total number of input modes that are currently configured */
-#define MODE_NUM 4
+#define MODE_NUM 5
 
 /* Function pointers arrrays used to simplify the code */
 typedef operator_t (*gpio_inputs) (void);
 typedef void (*gpio_inits) (void);
-gpio_inputs input_selector[] = {NULL, get_button, get_sports, get_driving};
-gpio_inits init_selector[] = {NULL, init_gpio_but, init_gpio_sp, init_gpio_dr};
+gpio_inputs input_selector[] = {NULL, get_button, get_sports, get_driving, get_rythms};
+gpio_inits init_selector[] = {NULL, init_gpio_but, init_gpio_sp, init_gpio_dr, init_gpio_ry};
 
 
 operator_t gpio_input(inmode_t mode) {

@@ -29,7 +29,7 @@ typedef struct {
 
 enum operations {NONE, LEFT, RIGHT, RLEFT, RRIGHT, DOWN, PAUSE};
 typedef enum operations operator_t;
-enum modes {KEY_BOARD, PI_BUTTON, PI_SPORTS, PI_DRIVING};
+enum modes {KEY_BOARD, PI_BUTTON, PI_SPORTS, PI_DRIVING, PI_RYTHMS};
 typedef enum modes inmode_t;
 
 /*

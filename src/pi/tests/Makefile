@@ -2,7 +2,7 @@ CC 					= gcc
 IncludePath	= -I../include -I../../core/include
 CFLAGS		= -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
 LFLAGS 		= -lwiringPi
-OBJ_FILES 	= gpio_test.o gpio_input.o gpio_button.o gpio_sports.o gpio_driving.o
+OBJ_FILES 	= gpio_test.o gpio_input.o gpio_button.o gpio_sports.o gpio_driving.o gpio_rythms.o
 
 pi: gpio_input
 
@@ -19,6 +19,8 @@ gpio_sports.o: ../gpio_sports.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 gpio_driving.o: ../gpio_driving.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+gpio_rythms.o: ../gpio_rythms.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:

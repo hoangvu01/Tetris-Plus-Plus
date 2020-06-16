@@ -2,8 +2,8 @@
  * An Interface for handling inputs of Tetris RYTHMS mode
  */
 
-#ifndef GPIO_DRIVING
-#define GPIO_DRIVING
+#ifndef GPIO_RYTHMS
+#define GPIO_RYTHMS
 
 #include "gpio_input.h"
 

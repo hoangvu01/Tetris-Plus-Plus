@@ -23,10 +23,10 @@
 #define GYRO_Z 0x47
 
 static int fd_l, fd_r;
-static int read_data(int fd, int addr);
+static short read_data(int fd, int addr);
 
 operator_t get_rythms(void) {
-  printf("Left X:%d; Right X:%d\n", read_data(fd_l, ACCEL_X), read_data(fd_r, ACCEL_X));
+  printf("Left Y:%d; Right Y:%d\n", read_data(fd_l, ACCEL_Y), read_data(fd_r, ACCEL_Y));
   return NONE;
 }
 
@@ -62,10 +62,12 @@ void init_gpio_ry(void) {
  * @param addr: Address of I2C register
  * @returns: Value read from the register
  */
-static int read_data(int fd, int addr) {
+static short read_data(int fd, int addr) {
+  /* use short to ensure that the sign is correct */
+  short data = 0;
   /* Higher Bits */
-  int data = wiringPiI2CReadReg8(fd, addr) << 8;
+  data = wiringPiI2CReadReg8(fd, addr) << 8;
   /* Lower Bits */
   data |= wiringPiI2CReadReg8(fd, addr);
-  return res;
+  return data;
 }
