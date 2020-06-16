@@ -7,7 +7,7 @@
 #define OFFSPRING_SIZE 30
 
 const int n_iterations = 5;
-const int n_pieces = 200;
+const int n_pieces = 500;
 
 int main(int argc, char **argv) {
     param_state_t **param_array = NULL;
@@ -81,7 +81,7 @@ param_state_t **init_param_array(int size) {
 }
 
 // find out the best move without altering the state
-double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block) {
+double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared) {
     double best_loss = -INFINITY;
     
     /* try different rotation/direction */
@@ -91,7 +91,9 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
             new_state->rotation = i;
             new_state->pos.x = j;
             if (canMove(new_state)) {
-                while (dropPieceWithOptions(new_state, false, true, NULL));
+                int lines_cleared = 0;
+                while (dropPieceWithOptions(new_state, true, true, &lines_cleared));
+                total_lines_cleared += lines_cleared;
 
                 double curr_loss = 0.0;
                 block_t *old_block = NULL;
@@ -99,13 +101,13 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
                     curr_loss = - param->aggregate_height_w * get_aggregate_height(new_state->grid)
                                 - param->hole_number_w * get_hole_number(new_state->grid)
                                 - param->bumpiness_w * get_bumpiness(new_state->grid)
-                                + param->complete_line_w * get_complete_line(new_state->grid);
+                                + param->complete_line_w * total_lines_cleared;
                 } else {
                     old_block = init_block_from_state(new_state);
                     //print_block(old_block);
                     spawnTetriminos(new_state);
                     new_state->nextBlock = NULL;
-                    curr_loss = immutable_best_move(new_state, param, NULL);
+                    curr_loss = immutable_best_move(new_state, param, NULL, total_lines_cleared);
                 }
 
                 if (curr_loss > best_loss) {
@@ -126,7 +128,7 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
 int best_move(state_t *state, const param_state_t *param) {
     block_t best_block;
     best_block.id = -1;
-    immutable_best_move(state, param, &best_block);
+    immutable_best_move(state, param, &best_block, 0);
     if (best_block.id == -1) return -1; // no possible move
     //print_block(&best_block);
     set_state_by_block(state, &best_block);
@@ -137,6 +139,8 @@ int best_move(state_t *state, const param_state_t *param) {
 
 void compute_loss(param_state_t *param, int iterations, int max_pieces) {
     int param_loss = 0;
+
+    #pragma omp parallel for reduction(+: param_loss)
     for (int i = 0; i < iterations; i++) {
         state_t *state = initState();
         int loss = 0;
@@ -159,13 +163,18 @@ void compute_loss(param_state_t *param, int iterations, int max_pieces) {
 param_state_t **select_fittest(param_state_t **param_array, int array_size, double percentage, int num) {
     int sample_size = (int) array_size * percentage;
     param_state_t **sample = calloc(sample_size, sizeof(param_state_t *));
+    bool *used = calloc(array_size, sizeof(bool));
     for (int i = 0; i < sample_size; i++) {
-        sample[i] = param_array[randomInteger(0, array_size)]; // warning: this is drawn with replacement. Might be better to draw without replacement.
+        int random = -1;
+        while (random == -1 || used[random]) random = randomInteger(0, array_size);
+        used[random] = true;
+        sample[i] = param_array[random];
     }
     sort_param_array(sample, sample_size);
     sample = realloc(sample, (num + 1) * sizeof(param_state_t *));
     sample[num] = NULL;
 
+    free(used);
     return sample;
 }
 

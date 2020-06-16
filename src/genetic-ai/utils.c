@@ -121,8 +121,8 @@ void sort_param_array(param_state_t **param_array, int array_size) {
 }
 
 static int get_column_height(grid_t grid, int c) {
-    for (int y = 0; y < GHEIGHT; y++) {
-        if (grid[c][y] != 0) {
+    for (int y = 2; y < GHEIGHT; y++) {
+        if (grid[y][c] != 0) {
             return GHEIGHT - y;
         }
     }
@@ -144,26 +144,24 @@ int get_complete_line(grid_t grid) {
     for (int i = 2; i < GHEIGHT; i++) {
         bool isComplete = true;
         for (int j = 0; j < GWIDTH; j++) {
-            if (grid[i][j] == 0) isComplete = false;
+            if (grid[i][j] == 0) {
+                isComplete = false;
+                break;
+            }
         }
 
-        if (isComplete) {
-            completedlines++;
-        }
+        if (isComplete) completedlines++;
     }
     return completedlines;
 }
 
 int get_hole_number(grid_t grid) {
-    bool is_block = false;
     int n = 0;
     for (int x = 0; x < GWIDTH; x++) {
-        for (int y = 0; y < GHEIGHT; y++) {
-            if (grid[y][x] != 0) {
-                is_block = true;
-            } else if (grid[y][x] == 0 && is_block) {
-                n++;
-            }
+        bool is_block = false;
+        for (int y = 2; y < GHEIGHT; y++) {
+            if (is_block) n++;
+            else if (grid[y][x] != 0) is_block = true;
         }
     }
 
@@ -186,9 +184,9 @@ void print_and_save_result(param_state_t **array, bool is_saving) {
            second->loss, second->aggregate_height_w, second->complete_line_w, second->hole_number_w, second->bumpiness_w);
     if (is_saving) {
         FILE *fp = fopen("training_progress.txt", "w");
-        fprintf(fp, "loss, aggregate_height_w, complete_line_w, hole_number_w, bumpiness_w\n");
+        //fprintf(fp, "loss, aggregate_height_w, complete_line_w, hole_number_w, bumpiness_w\n");
         for (int i = 0; array[i] != NULL; i++) {
-            fprintf(fp, "%d, %f, %f, %f, %f\n", array[i]->loss, array[i]->aggregate_height_w,
+            fprintf(fp, "%d %f %f %f %f\n", array[i]->loss, array[i]->aggregate_height_w,
                     array[i]->complete_line_w, array[i]->hole_number_w, array[i]->bumpiness_w);
         }
         fclose(fp);
