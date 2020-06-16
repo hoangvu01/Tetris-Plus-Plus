@@ -5,13 +5,13 @@ OBJ_DIR     = $(PROJ)/obj/genetic-ai
 CORE_OBJ_DIR = $(PROJ)/obj/core
 
 SRC_FILES   = $(wildcard *.c)
-OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES)) $(CORE_OBJ_DIR)/state.o $(CORE_OBJ_DIR)/grid.o $(CORE_OBJ_DIR)/tetriminos.o
+OBJ_FILES   = $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_FILES)) $(CORE_OBJ_DIR)/state.o $(CORE_OBJ_DIR)/grid.o $(CORE_OBJ_DIR)/tetriminos.o $(CORE_OBJ_DIR)/levels.o
 LIB_HEADERS = $(addprefix -I, $(wildcard $(LIB_DIR)/*/.)) $(addprefix -I, $(wildcard $(LIB_DIR)/*/include))
 
 CC          = gcc
 IncludePath = -Iinclude -I../core/include $(LIB_HEADERS)
-CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
-LFLAGS      = -lncurses $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
+CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath) -DLLVM_ENABLE_ASSERTIONS=On -Xpreprocessor -fopenmp -O3
+LFLAGS      = -lncurses -lomp  $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
 
 all: libs $(BIN_DIR)/train
 
