@@ -26,8 +26,8 @@
 #define GYRO_Z 0x47
 
 /* Thresholds for acceleration and gyro-acceleration detection  */
-#define accel_thres(acc) ((acc < -12000) || (acc > 12000))
-#define gyro_thres(gacc) ((gacc < -12000) || (gacc > 12000))
+#define accel_thres(acc) ((acc < -30000) || (acc > 30000))
+#define gyro_thres(gacc) ((gacc < -4000) || (gacc > 4000))
 
 /* Gravity's contribution to the acceleration, assuming the controllers are held straight */
 #define ACCEL_G 16960
@@ -36,6 +36,7 @@ static int fd_l, fd_r;
 static short read_data(int fd, int addr);
 
 /* Variable that avoids duplicated inputs */
+#define FLAG_COUNT 25
 static int set;
 
 operator_t get_rythms(void) {
@@ -53,20 +54,20 @@ operator_t get_rythms(void) {
   int lrz = read_data(fd_l, GYRO_Z);
   int rrz = read_data(fd_r, GYRO_Z);
 
-  set = 10;
+  set = FLAG_COUNT;
   if (gyro_thres(lrz)) {
     return RLEFT;
   }
   if (gyro_thres(rrz)) {
     return RRIGHT;
   }
-  if (accel_thres(ly)) {
+  if (accel_thres(lx)) {
     return LEFT;
   }
-  if (accel_thres(ry)) {
+  if (accel_thres(rx)) {
     return RIGHT;
   }
-  if (accel_thres(lx) && accel_thres(rx)) {
+  if (accel_thres(ly) && accel_thres(ry)) {
     return DOWN;
   }
   if (accel_thres(lz) && accel_thres(rz)) {
