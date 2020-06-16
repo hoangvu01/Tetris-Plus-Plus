@@ -18,8 +18,18 @@ typedef struct {
 } env_t;
 
 typedef struct {
+  int *heights;
+  int aggr_height;
+  int bumpiness;
+  int complete_lines;
+  int holes;
+  double score;
+} q_state;
+
+typedef struct {
   q_table *qtable;
-  double prev_score;
+  q_state *prev;
+  q_state *curr;
 } q_data_t;
 
 #endif

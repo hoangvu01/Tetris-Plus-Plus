@@ -21,12 +21,12 @@ long hash_env_state(env_t *env) {
   long hash = 0;
   for (int i = 0; i < GHEIGHT; i++){
     for (int j = 0; j < GWIDTH; j++) {
-      hash += env->grid[i][j] * (i * GWIDTH + j);
+      hash += (env->grid[i][j] > 0) * (i * GWIDTH + j);
     }
   }
   
-  hash += (env->block - env->list) * 13;
-  hash %= 10000;
+  hash += (env->block - env->list) * 5381;
+  hash %= 20000;
   
   return hash;
 
@@ -48,6 +48,10 @@ q_table *init_qtable() {
 bool insert_qtable(q_table *table, env_t *env_state, void *value) {
   long env_hash = hash_env_state(env_state);
   return hash_insert(table, (void *) &env_hash, sizeof(long), value);
+}
+
+bool load_hash_qtable(q_table *table, long *hash, void *value) {
+  return hash_insert(table, hash, sizeof(long), value);
 }
 
 void *find_qtable(q_table *table, env_t *env_state) {
