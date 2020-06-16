@@ -2,7 +2,7 @@
 
 #ignore temp files
 *~
-*.mk
+*.d
 
 #ignore pdf files (just keep source files)
 *.pdf
