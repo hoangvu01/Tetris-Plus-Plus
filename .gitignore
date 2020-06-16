@@ -24,6 +24,7 @@
 *.out
 *_test
 bin/tetris
+bin/*
 
 #ignore junk files from running C code
 *.txt
