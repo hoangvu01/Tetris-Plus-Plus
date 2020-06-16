@@ -12,7 +12,7 @@ state_t *initState(int levelNum) {
   return curr;
 }
 
-state_t *cloneState(state_t *state) {
+state_t *cloneState(const state_t *state) {
     state_t *new_state = malloc(sizeof(state_t));
     memcpy(new_state, state, sizeof(state_t));
     new_state->grid = cloneGrid(state->grid);
