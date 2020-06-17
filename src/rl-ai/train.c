@@ -26,6 +26,7 @@ void load_qtable(q_data_t *data){
   long key;
   double *actions = calloc(6, sizeof(double));
   while (getline(&line, &len, fp) != -1) {
+    if (line[0] == 'E') break;
     key = strtol(line, str, 10);
     strtok(line, "[");
     *str = strtok(NULL, "[");
@@ -61,6 +62,7 @@ void write_qtable(q_data_t *data, int episode) {
     fprintf(fp, "]\n");
   }
   
+  fprintf(fp, "Episode: %d", episode);
   fclose(fp);
   
 }
@@ -78,11 +80,11 @@ void train(int episodes) {
     fprintf(stdout, "Score : %d\n", score);
     fprintf(stdout, "====Episode %d====\n", i);     
     
-    if (i % 10 == 0) write_qtable(data, i); 
+    if (i % 50 == 0) write_qtable(data, i); 
   }
 }
 
 int main() {
-  train(10); 
+  train(1000000); 
   return EXIT_SUCCESS;
 }

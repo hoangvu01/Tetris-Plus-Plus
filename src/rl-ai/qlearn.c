@@ -4,14 +4,14 @@
 
 #define NO_ACTIONS 6
 
-#define ALPHA 0.1
-#define GAMMA 0.6
-#define EPSILON 0.15
+#define ALPHA 0.2
+#define GAMMA 0.8
+#define EPSILON 0.2
 
-#define A (-0.12)
-#define B (-0.191)
+#define A (-0.128)
+#define B (-0.132)
 #define C (10)
-#define D (-0.6)
+#define D (-0.3)
 
 #define randfloat() ((float) rand() / (float) RAND_MAX)
 
@@ -21,7 +21,7 @@ static void evaluate_state(state_t *curr, q_data_t *data);
 static void evaluate_grid(grid_t grid, q_state *curr);
 static void evaluate_heights(state_t *game, q_state *curr);
 
-static void update_score(q_data_t *data);
+static double update_score(q_data_t *data);
 static void print_scr(q_state *curr);
 // static void print_out(q_state *curr);
 
@@ -95,13 +95,11 @@ void step(q_data_t *data, state_t *curr) {
   data->curr->heights = calloc(GWIDTH, sizeof(int));
   processInput(curr, actions_space[move]);
   evaluate_state(curr, data);  
-  update_score(data);
    
   /* Calculate Q-Value */ 
+  double reward = update_score(data);
   double next_max = (*actions)[get_optimal_move(data, env, actions)];
-  double reward = (data->prev == NULL ? 0 : data->prev->score) - data->curr->score;
-  double new_score = (1 - ALPHA) * data->curr->score + 
-                      ALPHA * (reward + GAMMA * next_max);
+  double new_score = data->curr->score + ALPHA * (reward + GAMMA * next_max);
   (*actions)[move] = new_score;
   data->curr->score = new_score;
   if (data->prev != NULL) {
@@ -109,9 +107,7 @@ void step(q_data_t *data, state_t *curr) {
     free(data->prev);
   }
   data->prev = data->curr;
-  data->prev->score = new_score;
 
-  free(actions);
 }
 
 static void evaluate_state(state_t *curr, q_data_t *data) {
@@ -153,22 +149,23 @@ static void evaluate_heights(state_t *curr, q_state *qstate) {
   }
 }
 
-static void update_score(q_data_t *data) {
+static double update_score(q_data_t *data) {
   q_state *curr = data->curr;
   q_state *prev = data->prev;
   double new_score = 
     A * curr->aggr_height + B * curr->bumpiness + 
     C * curr->complete_lines + D * curr->holes;
 
+  double reward = 0;
   if (prev != NULL) {
-    if (prev->score <= curr->score) new_score += 10;
-    if (prev->holes >= curr->holes) new_score += 6;
-    if (prev->aggr_height >= curr->aggr_height) new_score += 10;
-    if (prev->bumpiness >= curr->bumpiness) new_score += 2;
+    if (prev->score <= curr->score) reward += 3;
+    if (prev->holes >= curr->holes) reward += 6;
+    if (prev->aggr_height >= curr->aggr_height) reward += 10;
+    if (prev->bumpiness >= curr->bumpiness) reward += 5;
   }
 
-  curr->score = new_score;
-
+  curr->score = (1 - ALPHA) * new_score;
+  return reward;
 }
 /*
 void print_out(q_state *curr) {
