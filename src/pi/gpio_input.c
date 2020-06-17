@@ -6,6 +6,7 @@
 #include "gpio_sports.h"
 #include "gpio_driving.h"
 #include "gpio_rythms.h"
+#include "gpio_led_array.h"
 
 /* Total number of input modes that are currently configured */
 #define MODE_NUM 5
@@ -31,4 +32,5 @@ void init_gpio(inmode_t mode) {
     return;
   }
   init_selector[mode]();
+  init_led_arr();
 }

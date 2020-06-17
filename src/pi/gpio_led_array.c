@@ -21,35 +21,14 @@
 #define BLUE 1
 #define GREEN 2
 
-static uint8_t data[4] = {0x0, 0x0, 0x0, 0x0};
-static uint8_t heart[8] = {0x00, 0x66, 0xFF, 0xFF, 0xFF, 0x7E, 0x3C, 0x18};
+static uint8_t data[4] = {0, 0, 0, 0};
+static uint8_t up[8][3];
+static uint8_t down[8][3];
 
+static uint8_t to_led_col(colour_t col);
+static void *display_led_up(void *dummy);
+static void *display_led_low(void *dummy);
 
-void *display_led_up(void *dummy) {
-  while (1) {
-    for (int j = 0; j < 8; j++) {
-      data[0] = ~heart[j];
-      data[1] = 0xFF;
-      data[2] = 0xFF;
-      data[3] = 0x01 << j;
-      wiringPiSPIDataRW(UPPER_DISPLAY, data, sizeof(data));
-      delay(OUT_DELAY);
-    }
-  }
-}
-
-void *display_led_low(void *dummy) {
-  while (1) {
-    for (int j = 0; j < 8; j++) {
-      data[0] = heart[j];
-      data[1] = 0xFF;
-      data[2] = 0xFF;
-      data[3] = 0x01 << j;
-      wiringPiSPIDataRW(LOWER_DISPLAY, data, sizeof(data));
-      delay(OUT_DELAY);
-    }
-  }
-}
 
 void init_led_arr(void) {
   if (wiringPiSetup() == -1) {
@@ -59,16 +38,89 @@ void init_led_arr(void) {
   wiringPiSPISetup(UPPER_DISPLAY, SPI_SPEED);
   wiringPiSPISetup(LOWER_DISPLAY, SPI_SPEED);
 
+  /* Initializes the grid */
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 3; j++) {
+      up[i][j] = 0;
+      down[i][j] = 0;
+    }
+  }
+
   /* Creates a separate thread for the display */
   pthread_t thread_id_u, thread_id_l;
   pthread_create(&thread_id_u, NULL, display_led_up, NULL);
   pthread_create(&thread_id_l, NULL, display_led_low, NULL);
 }
 
-int main(void) {
-  init_led_arr();
-  printf("This keeps running\n");
-  sleep(5);
-  heart[0] = 0xFF;
-  sleep(5);
+void update_led(grid_t grid) {
+  /* Only updates 8*16 grid */
+  /* Updates the upper bit */
+  for (int i = 6; i < 14; i++) {
+    up[i - 6][RED] = 0x00;
+    up[i - 6][BLUE] = 0x00;
+    up[i - 6][GREEN] = 0x00;
+
+    for (int j = 1; j < 9; j++) {
+      if (grid[i][j] > 0) {
+        up[i - 6][to_led_col(grid[i][j])] |= 1 << (8 - j);
+      }
+    }
+  }
+
+  /* Updates the lower bit */
+  for (int i = 14; i < 22; i++) {
+    down[i - 14][RED] = 0x00;
+    down[i - 14][BLUE] = 0x00;
+    down[i - 14][GREEN] = 0x00;
+
+    for (int j = 1; j < 9; j++) {
+      if (grid[i][j] > 0) {
+        down[i - 14][to_led_col(grid[i][j])] |= 1 << (8 - j);
+      }
+    }
+  }
+}
+
+
+static void *display_led_up(void *dummy) {
+  while (1) {
+    for (int i = 0; i < 8; i++) {
+      data[RED] = up[i][RED];
+      data[BLUE] = up[i][BLUE];
+      data[GREEN] = up[i][GREEN];
+      data[3] = 0x01 << i;
+      wiringPiSPIDataRW(UPPER_DISPLAY, data, sizeof(data));
+      delay(OUT_DELAY);
+    }
+  }
+}
+
+static void *display_led_low(void *dummy) {
+  while (1) {
+    for (int i = 0; i < 8; i++) {
+      data[RED] = down[i][RED];
+      data[BLUE] = down[i][BLUE];
+      data[GREEN] = down[i][GREEN];
+      data[3] = 0x01 << i;
+      wiringPiSPIDataRW(LOWER_DISPLAY, data, sizeof(data));
+      delay(OUT_DELAY);
+    }
+  }
+}
+
+static uint8_t to_led_col(colour_t col) {
+  switch (col) {
+    case 1:
+    case 2:
+      return RED;
+    case 3:
+    case 4:
+      return BLUE;
+    case 5:
+    case 6:
+    case 7:
+      return GREEN;
+    default:
+      return RED;    
+  }
 }
