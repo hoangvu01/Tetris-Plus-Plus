@@ -17,37 +17,49 @@ int compare_env_state(void *this, void *that) {
 
 }
 */
-long hash_env_state(env_t *env) {
-  long hash = 0;
-  for (int i = 0; i < GHEIGHT; i++){
-    for (int j = 0; j < GWIDTH; j++) {
-      hash += (env->grid[i][j] > 0) * (i * GWIDTH + j);
-    }
-  }
-  
-  hash += (env->block - env->list) * 5381;
-  hash %= 20000;
-  
-  return hash;
-
-
-}
-
+/*
 long compare_hash(void *this, void *that) {
   return *((long *) this) - *((long *) that);
 }
-
+*/
+/*
 long identity(void *ptr) {
   return *((long *) ptr);
 }
+*/
+long hash_env_state(void *env_ptr) {
+  env_t *env = (env_t *) env_ptr;
+  long hash = 0;
+  for (int i = 0; i < GWIDTH; i++) {
+    hash += env->elevation[i] * 17;
+  }
+  
+  hash += env->block * 5381 + env->spin * 1793;
+  
+  return hash;
+}
+
+long compare_env(void *this, void *that) {
+  env_t *env_this = (env_t *) this;
+  env_t *env_that = (env_t *) that;
+  for (int i = 0; i < GWIDTH; i++) {
+    long diff = env_this->elevation[i] - env_that->elevation[i];
+    if (diff != 0) return diff;
+  }
+
+ if (env_this->block != env_that->block) 
+   return env_this->block - env_that->block;
+  
+ return env_this->spin - env_that->spin;
+}
+
 
 q_table *init_qtable() {
-  return create_hashtable(&compare_hash, &identity, Q_SIZE);  
+  return create_hashtable(&compare_env, &hash_env_state, Q_SIZE);  
 }
 
 bool insert_qtable(q_table *table, env_t *env_state, void *value) {
-  long env_hash = hash_env_state(env_state);
-  return hash_insert(table, (void *) &env_hash, sizeof(long), value);
+  return hash_insert(table, (void *) env_state, sizeof(env_t), value);
 }
 
 bool load_hash_qtable(q_table *table, long *hash, void *value) {
@@ -55,6 +67,16 @@ bool load_hash_qtable(q_table *table, long *hash, void *value) {
 }
 
 void *find_qtable(q_table *table, env_t *env_state) {
-  long env_hash = hash_env_state(env_state);
-  return hash_find(table, (void *) &env_hash);
+  return hash_find(table, (void *) env_state);
+}
+
+void free_qtable(q_table *table) {
+  hash_table_itr *itr = get_hash_table_itr(table);
+
+  while (hash_iterator_hasnext(itr)) {
+    env_t *env = NULL;
+    hash_iterator_next(itr, env);
+    free(env->elevation);
+  }
+  free_hashtable(table);
 }

@@ -15,6 +15,7 @@
 
 #define randfloat() ((float) rand() / (float) RAND_MAX)
 
+static void compute_env(env_t *env, state_t *curr);
 static int get_optimal_move(q_data_t *data, env_t *env, double **actions);
 
 static void evaluate_state(state_t *curr, q_data_t *data);
@@ -29,7 +30,7 @@ const int actions_space[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'Z', 'X'};
 
 
 int play(q_data_t *data) {
-  WINDOW *game_win = init_display();
+  // WINDOW *game_win = init_display();
   state_t *curr = initState(LEVEL);
   bool hasMoving = false;
 
@@ -45,8 +46,8 @@ int play(q_data_t *data) {
       hasMoving = true;
     }
     step(data, curr);
-    print_scr(data->prev);
-    printState(curr, game_win);
+    // print_scr(data->prev);
+    // printState(curr, game_win);
     if (frameNum % framePerDrop(curr->level) == 0)
       hasMoving = dropPiece(curr);
   }
@@ -79,11 +80,9 @@ void step(q_data_t *data, state_t *curr) {
   double **actions = malloc(sizeof(double *));
   
   /* Set up environment */
-  env_t *env = malloc(sizeof(env_t));
+  env_t *env = calloc(1, sizeof(env_t));
   if (env == NULL) return;  
-  env->block = curr->block;
-  env->list = curr->list;
-  env->grid = curr->grid;
+  compute_env(env, curr);
 
   /* Exploration or Exploitation */
   move = get_optimal_move(data, env, actions);
@@ -96,7 +95,8 @@ void step(q_data_t *data, state_t *curr) {
   processInput(curr, actions_space[move]);
   evaluate_state(curr, data);  
    
-  /* Calculate Q-Value */ 
+  /* Calculate Q-Value */
+  compute_env(env, curr);
   double reward = update_score(data);
   double next_max = (*actions)[get_optimal_move(data, env, actions)];
   double new_score = data->curr->score + ALPHA * (reward + GAMMA * next_max);
@@ -107,7 +107,26 @@ void step(q_data_t *data, state_t *curr) {
     free(data->prev);
   }
   data->prev = data->curr;
+ 
+  free(actions);
+  free(env);
+}
 
+static void compute_env(env_t *env, state_t *curr) {
+  env->block = curr->block - curr->list;
+  env->spin = curr->block->num_spin;
+  env->elevation = calloc(GWIDTH, sizeof(int));
+
+  for (int i = 0; i < GHEIGHT; i++) {
+    for (int j = 0; j < GWIDTH; j++) {
+      if (curr->grid[i][j] > 0 && env->elevation[j] == 0) {
+        env->elevation[j] = GHEIGHT - i;       
+      }
+    }
+  }
+  for (int i = 1; i < GWIDTH; i++){
+    env->elevation[i] -= env->elevation[0];
+  }
 }
 
 static void evaluate_state(state_t *curr, q_data_t *data) {

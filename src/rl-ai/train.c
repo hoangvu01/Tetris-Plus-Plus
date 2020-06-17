@@ -5,7 +5,7 @@
 
 #include "qlearn.h"
 #include "qtable.h"
-
+#include "env_defns.h"
 
 #define ALPHA 0.1
 #define GAMMA 0.5
@@ -21,25 +21,45 @@ void load_qtable(q_data_t *data){
   }
 
   char *line = NULL;
-  char **str = malloc(sizeof(char *));
   size_t len = 0;
-  long key;
-  double *actions = calloc(6, sizeof(double));
+  env_t env;
   while (getline(&line, &len, fp) != -1) {
-    if (line[0] == 'E') break;
-    key = strtol(line, str, 10);
-    strtok(line, "[");
-    *str = strtok(NULL, "[");
-    strtok(*str, " ");
-    for (int i = 0; i < 6; i++) {
-      sscanf(strtok(NULL, " "), "%lf", actions + i);
+    int *elevation = calloc(GWIDTH, sizeof(int));
+    double *actions = calloc(6, sizeof(double));
+    env.elevation = elevation;
+    
+    char *elev, *block, *act;
+    elev = strtok(line, ",");
+    block = strtok(NULL, ",");
+    act = strtok(NULL, ",");
+    
+    if (elev[1] == 'p') break;
+
+    /* Scan elevation */
+    elev = strtok(elev, "[");
+    for (int i = 0; i < GWIDTH; i++) {
+      elev = strtok(NULL, " ");
+      sscanf(elev, "%d",  elevation + i);
     }
-    load_hash_qtable(data->qtable, &key, actions);
+    
+    /* Scan block */
+    block = strtok(block, "[");
+    sscanf(strtok(NULL, " "), "%d", &env.block);
+    sscanf(strtok(NULL, " "), "%d", &env.spin);
+ 
+
+    /* Scan actions */
+    act = strtok(act, "[");
+    for (int i = 0; i < 6; i++) {
+      act = strtok(NULL, " ");
+      sscanf(act, "%lf", actions + i);
+    }
+
+    insert_qtable(data->qtable, &env, actions);
   }
 
   fclose(fp);
   if (line) free(line);
-  free(str);
 }
 
 void write_qtable(q_data_t *data, int episode) {
@@ -53,9 +73,14 @@ void write_qtable(q_data_t *data, int episode) {
   hash_table_itr *itr = get_hash_table_itr(data->qtable);
   
   while (hash_iterator_hasnext(itr)) {
-    long key;
-    double *actions = (double *) hash_iterator_next(itr, &key);
-    fprintf(fp, "%ld : [", key);
+    env_t env;
+    double *actions = (double *) hash_iterator_next(itr, &env);
+    fprintf(fp, "Elev : [" );
+    for (int i = 0; i < GWIDTH; i++) {
+      fprintf(fp, "%d ", env.elevation[i]);
+    }
+    fprintf(fp, "], Block: [%d %d], ", env.block, env.spin);
+    fprintf(fp, "Actions : [");
     for (int i = 0; i < 6; i++) {
       fprintf(fp, "%f ", actions[i]);
     }
@@ -75,16 +100,13 @@ void train(int episodes) {
   for (int i = 1; i <= episodes; i++) {
     int score = play(data);
     endwin();
-    wprintw(stdscr, "Score : %d\n", score);  
-    wprintw(stdscr, "====Episode %d====\n", i);
-    fprintf(stdout, "Score : %d\n", score);
-    fprintf(stdout, "====Episode %d====\n", i);     
-    
+    wprintw(stdscr, "You scored: %d @ Episode %d\n", score, i);
+
     if (i % 50 == 0) write_qtable(data, i); 
   }
 }
 
 int main() {
-  train(1000000); 
+  train(100000); 
   return EXIT_SUCCESS;
 }

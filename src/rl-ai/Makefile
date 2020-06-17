@@ -12,7 +12,7 @@ TETRIS_OBJ_FILES = $(filter-out $(TETRIS_OBJ_DIR)/tetris.o, $(wildcard $(TETRIS_
 
 CC          = gcc
 IncludePath = -Iinclude -I../core/include $(LIB_HEADERS)
-CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
+CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -pedantic $(IncludePath)
 LFLAGS      = -lm -lncurses $(addprefix -L, $(wildcard $(LIB_DIR)/*/.)) $(wildcard $(LIB_DIR)/*/*.a)
 
 all: libs tetris $(BIN_DIR)/train

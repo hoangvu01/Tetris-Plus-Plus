@@ -12,9 +12,9 @@
 typedef hash_table q_table;
 
 typedef struct {
-  tetrimino_t *block;
-  tetrimino_t *list;
-  grid_t grid;
+  int block;
+  int spin;
+  int *elevation; /* Relative to the first column */
 } env_t;
 
 typedef struct {
