@@ -22,8 +22,8 @@
 #ignore junk files from compiling C code
 *.o
 *.out
-bin/tetris
-bin/train
+bin/*
+
 
 #ignore junk files from running C code
 *.txt

@@ -30,7 +30,7 @@ const int actions_space[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'Z', 'X'};
 
 
 int play(q_data_t *data) {
-  // WINDOW *game_win = init_display();
+  WINDOW *game_win = init_display();
   state_t *curr = initState(LEVEL);
   bool hasMoving = false;
 
@@ -46,8 +46,8 @@ int play(q_data_t *data) {
       hasMoving = true;
     }
     step(data, curr);
-    // print_scr(data->prev);
-    // printState(curr, game_win);
+    print_scr(data->prev);
+    printState(curr, game_win);
     if (frameNum % framePerDrop(curr->level) == 0)
       hasMoving = dropPiece(curr);
   }
