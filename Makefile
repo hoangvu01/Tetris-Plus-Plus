@@ -30,11 +30,11 @@ bin/tetris: $(CORE_OBJS)
 bin/tetrispi: $(PI_OBJS) $(CORE_OBJS)
 	$(CC) $^ $(LDLIBS) $(PILIBS) -o $@
 
-bin/genetic-ai-play: $(GENE_OBJS) $(filter-out obj/core/game.o, $(CORE_NO_MAIN))
-	$(CC) $^ $(LDLIBS) -lomp -o $@
+bin/genetic-ai-play: $(filter-out obj/genetic-ai/genetic-train.o, $(GENE_OBJS)) $(filter-out obj/core/game.o, $(CORE_NO_MAIN))
+	$(CC) $^ $(LDLIBS) -fopenmp -o $@
 
 bin/genetic-train: $(filter-out obj/genetic-ai/genetic-ai-play.o, $(GENE_OBJS)) $(filter-out obj/core/game.o, $(CORE_NO_MAIN))
-	$(CC) $^ $(LDLIBS) -lomp -o $@
+	$(CC) $^ $(LDLIBS) -fopenmp -o $@
 
 bin/rltrain: $(RL_OBJS) $(CORE_NO_MAIN)
 	$(CC) $^ $(LDLIBS) -o $@
