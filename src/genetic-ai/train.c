@@ -101,7 +101,7 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
                     curr_loss = - param->aggregate_height_w * get_aggregate_height(new_state->grid)
                                 - param->hole_number_w * get_hole_number(new_state->grid)
                                 - param->bumpiness_w * get_bumpiness(new_state->grid)
-                                + param->complete_line_w * total_lines_cleared;
+                                + param->complete_line_w * total_lines_cleared * 2;
                 } else {
                     old_block = init_block_from_state(new_state);
                     //print_block(old_block);

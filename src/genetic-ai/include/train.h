@@ -14,6 +14,10 @@
 #define randomInteger(min, max)  (rand() % (max - min) + min)
 #define randomDouble(min, max)  (rand() % 100 / 100.0) * (max - min) + min
 
+/*
+ * the entry point(main logic) of training
+ */
+void train(char *filename);
 
 /*
  * @brief: generate random parameter vector at first, similar to randomize the parameters in an artificial neural network

@@ -4,7 +4,7 @@
 #include "state.h"
 #include "levels.h"
 
-#define FRAME_RATE 60
+#define FRAME_RATE 48000000
 
 typedef struct timespec timespec_t;
 
@@ -49,6 +49,7 @@ void startGame(int levelNum) {
 
   freeState(curr);
   endwin();
+  free(game_win);
 
   if (curr->level.score > curr->highScore) writeHighScore(curr->level.score);
   printf("You scored %d points. \n", curr->level.score);
