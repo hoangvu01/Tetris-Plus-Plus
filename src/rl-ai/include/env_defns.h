@@ -13,6 +13,7 @@ typedef hash_table q_table;
 
 typedef struct {
   int block;
+  int block_x;
   int spin;
   int *elevation; /* Relative to the first column */
 } env_t;
@@ -23,6 +24,8 @@ typedef struct {
   int bumpiness;
   int complete_lines;
   int holes;
+  int max_height;
+  int min_height;
   double score;
 } q_state;
 

@@ -46,7 +46,7 @@ void load_qtable(q_data_t *data){
     block = strtok(block, "[");
     sscanf(strtok(NULL, " "), "%d", &env.block);
     sscanf(strtok(NULL, " "), "%d", &env.spin);
- 
+    sscanf(strtok(NULL, " "), "%d", &env.block_x); 
 
     /* Scan actions */
     act = strtok(act, "[");
@@ -79,7 +79,7 @@ void write_qtable(q_data_t *data, int episode) {
     for (int i = 0; i < GWIDTH; i++) {
       fprintf(fp, "%d ", env.elevation[i]);
     }
-    fprintf(fp, "], Block: [%d %d], ", env.block, env.spin);
+    fprintf(fp, "], Block: [%d %d %d], ", env.block, env.spin, env.block_x);
     fprintf(fp, "Actions : [");
     for (int i = 0; i < 6; i++) {
       fprintf(fp, "%f ", actions[i]);
@@ -102,7 +102,7 @@ void train(int episodes) {
     endwin();
     wprintw(stdscr, "You scored: %d @ Episode %d\n", score, i);
 
-    if (i % 50 == 0) write_qtable(data, i); 
+    if (i % 20 == 0) write_qtable(data, i); 
   }
 }
 

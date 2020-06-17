@@ -34,7 +34,7 @@ long hash_env_state(void *env_ptr) {
     hash += env->elevation[i] * 17;
   }
   
-  hash += env->block * 5381 + env->spin * 1793;
+  hash += env->block * 5381 + env->spin * 1793 + env->block_x * 137;
   
   return hash;
 }
@@ -50,7 +50,8 @@ long compare_env(void *this, void *that) {
  if (env_this->block != env_that->block) 
    return env_this->block - env_that->block;
   
- return env_this->spin - env_that->spin;
+ return (env_this->spin - env_that->spin) 
+        + (env_this->block_x - env_that->block_x);
 }
 
 
