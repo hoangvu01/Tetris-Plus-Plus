@@ -23,6 +23,7 @@
 *.o
 *.out
 bin/tetris
+bin/train
 
 #ignore junk files from running C code
 *.txt
