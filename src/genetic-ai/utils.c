@@ -49,12 +49,15 @@ void normalize(param_state_t *param) {
   nw *= nw;
   register double bw = param->bumpiness_w;
   bw *= bw;
-  double magnitude = sqrt(hw + lw + nw + bw);
+  register double rw = param->risk_w;
+  rw *= rw;
+  double magnitude = sqrt(hw + lw + nw + bw + rw);
 
   param->aggregate_height_w /= magnitude;
   param->complete_line_w /= magnitude;
   param->hole_number_w /= magnitude;
   param->bumpiness_w /= magnitude;
+  param->risk_w /= magnitude;
 }
 
 bool dropPieceWithOptions(state_t *curr, bool clear_lines, bool color_grid, int* lines_cleared) {
@@ -102,7 +105,7 @@ void free_param_array(param_state_t **param_array) {
 }
 
 void print_param(const param_state_t *param) {
-    printf("param_state_t(A=%f, B=%f, C=%f, D=%f, l=%d)\n", param->aggregate_height_w, param->complete_line_w, param->hole_number_w, param->bumpiness_w, param->loss);
+    printf("param_state_t(height=%f, clear_lines=%f, hole_num=%f, bumpiness=%f, risk=%f, loss=%d)\n", param->aggregate_height_w, param->complete_line_w, param->hole_number_w, param->bumpiness_w, param->risk_w, param->loss);
 }
 
 void print_param_array(param_state_t **param_array, int array_size) {
@@ -175,19 +178,36 @@ int get_bumpiness(grid_t grid) {
     return b;
 }
 
+int get_risk(grid_t grid) {
+  int risk = 0;
+  for (int x = 0; x < GWIDTH - 2; x++) {
+    int diff1 = get_column_height(grid, x) - get_column_height(grid, x+1);
+    int diff2 = get_column_height(grid, x+1) - get_column_height(grid, x+2);
+    if (diff1 >= 0 && diff2 <= 0 && diff1 - diff2 <= 6) {
+      if (diff1 - diff2 <= 6) {
+        risk += diff1 - diff2;
+      } else {
+        risk--;
+      }
+    }
+  }
+
+  return risk;
+}
+
 void print_and_save_result(param_state_t **array, bool is_saving) {
     param_state_t *first = array[0];
     param_state_t *second = array[1];
-    printf("The first fittest param: loss - %d, aggregate_height_w - %f, complete_line_w - %f, hole_number_w - %f, bumpiness_w - %f\n",
-            first->loss, first->aggregate_height_w, first->complete_line_w, first->hole_number_w, first->bumpiness_w);
-    printf("The second fittest param: loss - %d, aggregate_height_w - %f, complete_line_w - %f, hole_number_w - %f, bumpiness_w - %f\n",
-           second->loss, second->aggregate_height_w, second->complete_line_w, second->hole_number_w, second->bumpiness_w);
+    printf("The first fittest param: loss - %d, aggregate_height_w - %f, complete_line_w - %f, hole_number_w - %f, bumpiness_w - %f, risk_w - %f\n",
+            first->loss, first->aggregate_height_w, first->complete_line_w, first->hole_number_w, first->bumpiness_w, first->risk_w);
+    printf("The second fittest param: loss - %d, aggregate_height_w - %f, complete_line_w - %f, hole_number_w - %f, bumpiness_w - %f, risk_w - %f\n",
+           second->loss, second->aggregate_height_w, second->complete_line_w, second->hole_number_w, second->bumpiness_w, second->risk_w);
     if (is_saving) {
         FILE *fp = fopen("training_progress.txt", "w");
         //fprintf(fp, "loss, aggregate_height_w, complete_line_w, hole_number_w, bumpiness_w\n");
         for (int i = 0; array[i] != NULL; i++) {
-            fprintf(fp, "%d %f %f %f %f\n", array[i]->loss, array[i]->aggregate_height_w,
-                    array[i]->complete_line_w, array[i]->hole_number_w, array[i]->bumpiness_w);
+            fprintf(fp, "%d %lf %lf %lf %lf %lf\n", array[i]->loss, array[i]->aggregate_height_w,
+                    array[i]->complete_line_w, array[i]->hole_number_w, array[i]->bumpiness_w, array[i]->risk_w);
         }
         fclose(fp);
     }
@@ -207,7 +227,7 @@ param_state_t **read_param_from_file(char *filename, int array_size) {
   }
   param_array[array_size] = NULL;
   int i = 0;
-  while (fscanf(fp, "%d %lf %lf %lf %lf ", &param_array[i]->loss, &param_array[i]->aggregate_height_w, &param_array[i]->complete_line_w, &param_array[i]->hole_number_w, &param_array[i]->bumpiness_w) == 5) {
+  while (fscanf(fp, "%d %lf %lf %lf %lf %lf", &param_array[i]->loss, &param_array[i]->aggregate_height_w, &param_array[i]->complete_line_w, &param_array[i]->hole_number_w, &param_array[i]->bumpiness_w, &param_array[i]->risk_w) == 5) {
     i++;
   }
 

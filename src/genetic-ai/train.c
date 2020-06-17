@@ -65,6 +65,7 @@ param_state_t *generate_random_param() {
     param->complete_line_w = randomDouble(0, 1);
     param->hole_number_w = randomDouble(0, 1);
     param->bumpiness_w = randomDouble(0, 1);
+    param->risk_w = randomDouble(0, 1);
     param->loss = INT_MAX;
 
     return param;
@@ -101,7 +102,8 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
                     curr_loss = - param->aggregate_height_w * get_aggregate_height(new_state->grid)
                                 - param->hole_number_w * get_hole_number(new_state->grid)
                                 - param->bumpiness_w * get_bumpiness(new_state->grid)
-                                + param->complete_line_w * total_lines_cleared * 2;
+                                + param->complete_line_w * total_lines_cleared * 2
+                                + param->risk_w * get_risk(new_state->grid);
                 } else {
                     old_block = init_block_from_state(new_state);
                     //print_block(old_block);
@@ -191,6 +193,7 @@ bool generate_child(param_state_t **fittest, param_state_t **param_array, int ar
         param->complete_line_w += temp->complete_line_w * temp->loss;
         param->hole_number_w += temp->hole_number_w * temp->loss;
         param->bumpiness_w += temp->bumpiness_w * temp->loss;
+        param->risk_w += temp->risk_w * temp->loss;
     }
     normalize(param);
 
