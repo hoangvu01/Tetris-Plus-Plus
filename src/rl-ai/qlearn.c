@@ -1,6 +1,6 @@
 #include "qlearn.h"
 
-#define LEVEL 500 
+#define LEVEL 1000 
 
 #define NO_ACTIONS 6
 

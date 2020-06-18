@@ -102,7 +102,7 @@ void train(int episodes) {
     endwin();
     wprintw(stdscr, "You scored: %d @ Episode %d\n", score, i);
 
-    if (i % 20 == 0) write_qtable(data, i); 
+    if (i % 100 == 0) write_qtable(data, i); 
   }
 }
 
