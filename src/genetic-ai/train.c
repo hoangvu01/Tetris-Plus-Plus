@@ -99,10 +99,10 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
                 double curr_loss = 0.0;
                 block_t *old_block = NULL;
                 if (state->nextBlock == NULL) {
-                    curr_loss = - param->aggregate_height_w * get_aggregate_height(new_state->grid)
+                    curr_loss = + param->aggregate_height_w * get_aggregate_height(new_state->grid) * 0.7
                                 - param->hole_number_w * get_hole_number(new_state->grid)
-                                - param->bumpiness_w * get_bumpiness(new_state->grid)
-                                + param->complete_line_w * total_lines_cleared * 2
+                                - param->bumpiness_w * get_bumpiness(new_state->grid) * 0.5
+                                + param->complete_line_w * total_lines_cleared
                                 + param->risk_w * get_risk(new_state->grid);
                 } else {
                     old_block = init_block_from_state(new_state);
@@ -154,7 +154,7 @@ void compute_loss(param_state_t *param, int iterations, int max_pieces) {
                 printf("no more moves available, skipping\n");
                 break;
             }
-            loss += curr_loss;
+            loss += curr_loss * curr_loss;
         }
         param_loss += loss;
         freeState(state);

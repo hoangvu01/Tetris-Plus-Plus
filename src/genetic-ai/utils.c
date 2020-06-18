@@ -155,7 +155,7 @@ int get_complete_line(grid_t grid) {
 
         if (isComplete) completedlines++;
     }
-    return completedlines;
+    return completedlines * completedlines;
 }
 
 int get_hole_number(grid_t grid) {
@@ -180,16 +180,18 @@ int get_bumpiness(grid_t grid) {
 
 int get_risk(grid_t grid) {
   int risk = 0;
-  for (int x = 0; x < GWIDTH - 2; x++) {
-    int diff1 = get_column_height(grid, x) - get_column_height(grid, x+1);
-    int diff2 = get_column_height(grid, x+1) - get_column_height(grid, x+2);
-    if (diff1 >= 0 && diff2 <= 0 && diff1 - diff2 <= 6) {
-      if (diff1 - diff2 <= 6) {
-        risk += diff1 - diff2;
-      } else {
-        risk--;
-      }
+  if (get_column_height(grid, 1) - get_column_height(grid, 0) <= 5) {
+    risk += 4;
+  }
+  for (int x = 1; x < GWIDTH - 1; x++) {
+    int diff1 = get_column_height(grid, x-1) - get_column_height(grid, x);
+    int diff2 = get_column_height(grid, x) - get_column_height(grid, x+1);
+    if (diff1 >= 5 && diff2 <= -5) {
+        risk += 4;
     }
+  }
+  if (get_column_height(grid, GWIDTH - 2) - get_column_height(grid, GWIDTH - 1) <= 5) {
+    risk += 4;
   }
 
   return risk;
@@ -227,7 +229,7 @@ param_state_t **read_param_from_file(char *filename, int array_size) {
   }
   param_array[array_size] = NULL;
   int i = 0;
-  while (fscanf(fp, "%d %lf %lf %lf %lf %lf", &param_array[i]->loss, &param_array[i]->aggregate_height_w, &param_array[i]->complete_line_w, &param_array[i]->hole_number_w, &param_array[i]->bumpiness_w, &param_array[i]->risk_w) == 5) {
+  while (fscanf(fp, "%d %lf %lf %lf %lf %lf", &param_array[i]->loss, &param_array[i]->aggregate_height_w, &param_array[i]->complete_line_w, &param_array[i]->hole_number_w, &param_array[i]->bumpiness_w, &param_array[i]->risk_w) == 6) {
     i++;
   }
 
