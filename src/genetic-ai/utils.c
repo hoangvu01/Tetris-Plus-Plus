@@ -155,7 +155,7 @@ int get_complete_line(grid_t grid) {
 
         if (isComplete) completedlines++;
     }
-    return completedlines * completedlines;
+    return completedlines;
 }
 
 int get_hole_number(grid_t grid) {
