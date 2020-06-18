@@ -1,19 +1,26 @@
-#include "game.h"
-
+#include <time.h>
+#include "genetic-ai-play.h"
 #include "display.h"
-#include "levels.h"
 #include "state.h"
+#include "levels.h"
 
-#ifndef CLOCK_PROCESS_CPUTIME_ID
-#define CLOCK_PROCESS_CPUTIME_ID 2
-#endif
-
-#define FRAME_RATE 60
+#define FRAME_RATE 48000000
 
 typedef struct timespec timespec_t;
 
-void updateFrame(timespec_t *now, timespec_t *lastFrame,
-                 unsigned long *frameNum); 
+void startGame(int levelNum);
+void updateFrame(timespec_t *now, timespec_t *lastFrame, unsigned long *frameNum);
+/* This parameter has been trained over the following config:
+ * max_piece = 500, iterations = 5
+ */
+static param_state_t param = {0.553276, 0.271804, 0.753433, 0.228793, 191};
+static param_state_t *param_p = &param;
+
+int main(void) {
+  int levelNum = startScreen();
+  startGame(levelNum);
+  return EXIT_SUCCESS;
+}
 
 void startGame(int levelNum) {
   WINDOW *game_win = init_display();
@@ -29,23 +36,25 @@ void startGame(int levelNum) {
 
     if (!hasMoving) {
       if (!spawnTetriminos(curr)) break;
+      block_t best_block;
+      immutable_best_move(curr, param_p, &best_block, 0);
+      set_state_by_block(curr, &best_block);
+      curr->pos.y = 2;
       hasMoving = true;
     }
     printState(curr, game_win);
-    int key = getInput();
-    processInput(curr, key);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);
   }
 
   freeState(curr);
   endwin();
-  
+  free(game_win);
+
   if (curr->level.score > curr->highScore) writeHighScore(curr->level.score);
   printf("You scored %d points. \n", curr->level.score);
   printf("The high score is %d points. \n", readHighScore());
 }
-
 
 void updateFrame(timespec_t *now, timespec_t *lastFrame,
                  unsigned long *frameNum) {

@@ -15,6 +15,11 @@
 #define randomDouble(min, max)  (rand() % 100 / 100.0) * (max - min) + min
 
 /*
+ * the entry point(main logic) of training
+ */
+void train(char *filename);
+
+/*
  * @brief: generate random parameter vector at first, similar to randomize the parameters in an artificial neural network
  * @return: return the pointer to the random parameter vector
  */
@@ -28,13 +33,19 @@ param_state_t *generate_random_param();
 param_state_t **init_param_array(int size);
 
 /*
+ * @brief: helper function for best_move. Used in play.c as well
+ */
+
+double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared);
+
+/*
  * @brief: calculate the best move from the given block and grid layout with the given parameter vector
  * @param: state_t *state: the current state of the game (see state.h in core folder)
  * @param: param_state_t *param: the given parameter vector used in calculating loss
  * @param: tetriminos_t *best_block: the pointer to the block that will be set to the best move
  * @param: int index and int total: total is used to track how many blocks to look ahead and index is used for termination of recursion
  */
-double best_move(state_t *state, param_state_t *param, tetrimino_t *best_block, int index, int total);
+int best_move(state_t *state, const param_state_t *param);
 
 
 /*
@@ -56,10 +67,10 @@ param_state_t **select_fittest(param_state_t **param_array, int array_size, doub
 
 /*
  * @brief: generate the next generation of parameter vector using cross-over and insert them into the parameter vector array
- * @param: param_state_t **prev_param_array: fittest parameter vectors from previous generation
- * @param: param_state_t **param_array: the array where the fittest individuals will be inserted, sorted by the loss value
+ * @param: param_state_t **fittest: fittest parameter vectors from previous generation
+ * @param: param_state_t **param_array: the offspring array where the fittest individuals will be inserted, sorted by the loss value
  */
-void generate_child(param_state_t **prev_param_array, param_state_t **param_array, int array_size);
+bool generate_child(param_state_t **fittest, param_state_t **param_array, int array_size);
 
 
 #endif

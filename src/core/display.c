@@ -1,10 +1,11 @@
-#include <ncurses.h>
+#include "display.h"
+
 #include <curses.h>
+#include <ncurses.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-
-#include "display.h"
+#include <time.h>
 
 #define WIN_MIN_WIDTH 60
 #define WIN_MIN_HEIGHT 40
@@ -14,7 +15,7 @@ void printGrid(grid_t grid, WINDOW *game_window);
 void printNext(state_t *cur, WINDOW *item_window);
 
 int startScreen() {
-  printf("\033[H\033[J"); // clears the terminal
+  printf("\033[H\033[J");  // clears the terminal
   printf(
       " _____ _____ ___________ _____ _____ \n"
       "|_   _|  ___|_   _| ___ \\_   _/  ___|\n"
@@ -26,12 +27,25 @@ int startScreen() {
   printf("Press Z / X to rotate. \n");
   printf("Press arrow keys to shift. \n\n");
   int levelNum;
-
   do {
     printf("Please select a level between 0 and 19: ");
     scanf("%d", &levelNum);
   } while (levelNum < 0 || levelNum > 19);
 
+  char string[100];
+  getchar();
+  printf("Please enter a session token, leave blank to generate a new one: ");
+  fgets(string, 100, stdin);
+  string[strlen(string) - 1] = '\0';
+  if (strlen(string) > 0) {
+    srand(atoi(string));
+  } else {
+    int seed = time(0);
+    srand(seed);
+    printf("Your token is: %d \n", seed);
+  }
+  printf("Press enter to start game. \n");
+  getchar();
   return levelNum;
 }
 
@@ -54,14 +68,13 @@ WINDOW *init_display() {
   keypad(stdscr, true);
   refresh();
 
-
   // TODO: write an offset as a function of window size
   int y_offset, x_offset, window_width;
 
   int maxy, maxx;
   getmaxyx(main_win, maxy, maxx);
 
-  y_offset = 0 * maxy + 3; 
+  y_offset = 0 * maxy + 3;
   window_width = GWIDTH * 2 + 2;
   x_offset = maxx / 2 - window_width;
 
@@ -88,7 +101,7 @@ void printState(state_t *curr, WINDOW *game_window) {
   getmaxyx(game_window, sub_maxy, sub_maxx);
   getparyx(game_window, score_y_offset, score_x_offset);
 
-  score_y_offset += sub_maxy / 4; 
+  score_y_offset += sub_maxy / 4;
   score_x_offset += sub_maxx + 2;
 
   grid_t output = cloneGrid(curr->grid);
@@ -102,9 +115,12 @@ void printState(state_t *curr, WINDOW *game_window) {
   box(game_window, 0, 0);
 
   printGrid(output, game_window);
-  mvprintw(getpary(game_window) + 1, score_x_offset, "High Score : %d\n", curr->highScore);
-  mvprintw(score_y_offset++, score_x_offset, "Curr Score : %d\n", curr->level.score);
-  mvprintw(score_y_offset++, score_x_offset, "Level : %d\n", curr->level.levelNum);
+  mvprintw(getpary(game_window) + 1, score_x_offset, "High Score : %d\n",
+           curr->highScore);
+  mvprintw(score_y_offset++, score_x_offset, "Curr Score : %d\n",
+           curr->level.score);
+  mvprintw(score_y_offset++, score_x_offset, "Level : %d\n",
+           curr->level.levelNum);
   mvprintw(score_y_offset++, score_x_offset, "Lines : %d\n", curr->totalLines);
   mvprintw(score_y_offset++, score_x_offset, "Next:");
 
@@ -152,4 +168,3 @@ void printNext(state_t *curr, WINDOW *item_win) {
     }
   }
 }
-
