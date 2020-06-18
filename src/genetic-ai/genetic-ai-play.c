@@ -4,7 +4,7 @@
 #include "state.h"
 #include "levels.h"
 
-#define FRAME_RATE 48000000
+#define FRAME_RATE 60
 
 typedef struct timespec timespec_t;
 
@@ -13,7 +13,12 @@ void updateFrame(timespec_t *now, timespec_t *lastFrame, unsigned long *frameNum
 /* This parameter has been trained over the following config:
  * max_piece = 500, iterations = 5
  */
-static param_state_t param = {0.553276, 0.271804, 0.753433, 0.228793, 191};
+/* the conservative */
+static param_state_t param = {0.553276, 0.271804, 0.753433, 0.228793, 0.000000, 191};
+/* the risky */
+//static param_state_t param = {0.407466, 0.294228, 0.838129, 0.189285, 0.095462, 1342};
+/* the risky 2*/
+//static param_state_t param = {0.312306, 0.324220, 0.848936, 0.213801, 0.175910, 1390};
 static param_state_t *param_p = &param;
 
 int main(void) {

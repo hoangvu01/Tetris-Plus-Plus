@@ -51,7 +51,7 @@ void normalize(param_state_t *param) {
   bw *= bw;
   register double rw = param->risk_w;
   rw *= rw;
-  double magnitude = sqrt(hw + lw + nw + bw + rw);
+  double magnitude = sqrt(hw + lw + nw + bw);
 
   param->aggregate_height_w /= magnitude;
   param->complete_line_w /= magnitude;
@@ -155,7 +155,8 @@ int get_complete_line(grid_t grid) {
 
         if (isComplete) completedlines++;
     }
-    return completedlines * completedlines;
+    int score[5] = {0, 40, 100, 300, 1200};
+    return score[completedlines];
 }
 
 int get_hole_number(grid_t grid) {
