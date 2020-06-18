@@ -14,7 +14,7 @@
 
 void load_qtable(q_data_t *data){
   FILE *fp;
-  fp = fopen("qtable.txt", "r");
+  fp = fopen("qtable_result.txt", "r");
   if (fp == NULL) {
     fprintf(stderr, "Cannot open file");
     return;
@@ -64,7 +64,7 @@ void load_qtable(q_data_t *data){
 
 void write_qtable(q_data_t *data, int episode) {
   FILE *fp;
-  fp = fopen("qtable.txt", "w+");
+  fp = fopen("qtable_result.txt", "w+");
   if (fp == NULL) {
     fprintf(stderr, "Cannot open file");
     exit(EXIT_FAILURE);

@@ -1,6 +1,7 @@
 #include "qlearn.h"
 
 #define LEVEL 1000 
+#define FRAME_RATE 60
 
 #define NO_ACTIONS 6
 
@@ -25,12 +26,13 @@ static void evaluate_heights(state_t *game, q_state *curr);
 
 static double update_score(q_data_t *data);
 static void print_scr(q_state *curr);
-static void print_out(q_state *curr);
-
-static int translate_input();
 
 const int actions_space[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'Z', 'X'};
 
+typedef struct timespec timespec_t;
+
+void updateFrame(timespec_t *now, timespec_t *lastFrame,
+                 unsigned long *frameNum); 
 
 int play(q_data_t *data) {
   WINDOW *game_win = init_display();
@@ -56,6 +58,46 @@ int play(q_data_t *data) {
   }
   freeState(curr);
   return curr->level.score;
+}
+
+void updateFrame(timespec_t *now, timespec_t *lastFrame,
+                 unsigned long *frameNum) {
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, now);
+  double delta = (now->tv_sec - lastFrame->tv_sec) * 1e6 +
+                 (now->tv_nsec - lastFrame->tv_nsec) / 1e3;
+  *lastFrame = *now;
+  if (delta < 1e6 / FRAME_RATE) {
+    usleep(1e6 / FRAME_RATE - delta);
+  }
+  *frameNum = *frameNum + 1;
+}
+
+void simulate_input(state_t *curr, int key) {
+  state_t teststate = *curr;
+  switch (key) {
+    case KEY_DOWN:
+      teststate.pos.y++;
+      break;
+    case KEY_RIGHT:
+      teststate.pos.x++;
+      break;
+    case KEY_LEFT:
+      teststate.pos.x--;
+      break;
+    case 'Z':
+    case 'z':
+      teststate.rotation = antiClockwise(curr->block, teststate.rotation);
+      break;
+    case 'X':
+    case 'x':
+      teststate.rotation = clockwise(curr->block, teststate.rotation);
+      break;
+    case 'P':
+    case 'p':
+      pauseGame();
+      break;
+  }
+  if (canMove(&teststate)) *curr = teststate;
 }
 
 static int get_optimal_move(q_data_t *data, env_t *env, double **actions) {
@@ -92,11 +134,10 @@ void step(q_data_t *data, state_t *curr) {
   if (randfloat() < EPSILON) 
   move = rand() % NO_ACTIONS; /* Exploration */
 
-  // move = translate_input();
   /* Evaluate the move */
   data->curr = calloc(1, sizeof(q_state));
   data->curr->heights = calloc(GWIDTH, sizeof(int));
-  processInput(curr, actions_space[move]);
+  simulate_input(curr, actions_space[move]);
   evaluate_state(curr, data);  
    
   /* Calculate Q-Value */
@@ -201,19 +242,6 @@ static double update_score(q_data_t *data) {
   return reward;
 }
 
-void print_out(q_state *curr) {
-  fprintf(stdout, "aggr_height: %d\n", curr->aggr_height);
-  fprintf(stdout, "bumpiness: %d\n", curr->bumpiness);
-  fprintf(stdout, "complete_lines: %d\n", curr->complete_lines);
-  fprintf(stdout, "holes: %d\n", curr->holes);
-  fprintf(stdout, "score: %lf\n", curr->score);
-  fprintf(stdout, "H: [");
-  for (int i = 0; i < GWIDTH; i++)
-    fprintf(stdout, "%d ", curr->heights[i]);
-  fprintf(stdout, "]\n");
-}
-
-
 static void print_scr(q_state *curr) {
   wmove(stdscr, 100, 0);
   wprintw(stdscr, "aggr_height: %d\n", curr->aggr_height);
@@ -226,17 +254,5 @@ static void print_scr(q_state *curr) {
   for (int i = 0; i < GWIDTH; i++)
     wprintw(stdscr, "%d ", curr->heights[i]);
   wprintw(stdscr, "]\n");
-}
-
-int translate_input() {
-  int key = getch();
-  switch (key) {
-    case KEY_DOWN: return 1;
-    case KEY_RIGHT: return 3;
-    case KEY_LEFT: return 2;
-    case 'z': return 4;
-    case 'x': return 5;
-    default: return 0;
-  }
 }
 
