@@ -7,7 +7,7 @@
 #define OFFSPRING_SIZE 30
 
 const int n_iterations = 5;
-const int n_pieces = 500;
+const int n_pieces = 200;
 
 void train(char *filename) {
     param_state_t **param_array = NULL;
@@ -94,16 +94,17 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
             if (canMove(new_state)) {
                 int lines_cleared = 0;
                 while (dropPieceWithOptions(new_state, true, true, &lines_cleared));
-                total_lines_cleared += lines_cleared;
+		int score[5] = {0, 40, 100, 300, 1200};
+                total_lines_cleared += score[lines_cleared];
 
                 double curr_loss = 0.0;
                 block_t *old_block = NULL;
                 if (state->nextBlock == NULL) {
-                    curr_loss = + param->aggregate_height_w * get_aggregate_height(new_state->grid) * 0.7
+                    curr_loss = + param->aggregate_height_w * get_aggregate_height(new_state->grid)
                                 - param->hole_number_w * get_hole_number(new_state->grid)
-                                - param->bumpiness_w * get_bumpiness(new_state->grid) * 0.5
-                                + param->complete_line_w * total_lines_cleared
-                                + param->risk_w * get_risk(new_state->grid);
+                                - param->bumpiness_w * get_bumpiness(new_state->grid)
+                                + param->complete_line_w * total_lines_cleared;
+                                //+ param->risk_w * get_risk(new_state->grid);
                 } else {
                     old_block = init_block_from_state(new_state);
                     //print_block(old_block);
