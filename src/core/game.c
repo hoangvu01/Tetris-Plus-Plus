@@ -1,4 +1,9 @@
-#include "game.h"
+#include <ncurses.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "display.h"
 #include "levels.h"
@@ -32,8 +37,7 @@ void startGame(int levelNum) {
       hasMoving = true;
     }
     printState(curr, game_win);
-    int key = getInput();
-    processInput(curr, key);
+    processInput(curr);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);
   }
