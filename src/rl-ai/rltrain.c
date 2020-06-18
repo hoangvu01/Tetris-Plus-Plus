@@ -12,7 +12,7 @@
 #define EPSILON 0.1
 
 
-void load_qtable(q_data_t *data){
+void load_qtable(q_data *data){
   FILE *fp;
   fp = fopen("qtable_result.txt", "r");
   if (fp == NULL) {
@@ -62,7 +62,7 @@ void load_qtable(q_data_t *data){
   if (line) free(line);
 }
 
-void write_qtable(q_data_t *data, int episode) {
+void write_qtable(q_data *data, int episode) {
   FILE *fp;
   fp = fopen("qtable_result.txt", "w+");
   if (fp == NULL) {
@@ -94,7 +94,7 @@ void write_qtable(q_data_t *data, int episode) {
 
 
 void train(int episodes) {
-  q_data_t *data = calloc(1, sizeof(q_data_t));
+  q_data *data = calloc(1, sizeof(q_data));
   data->qtable = init_qtable();
   load_qtable(data);
   for (int i = 1; i <= episodes; i++) {
@@ -102,11 +102,11 @@ void train(int episodes) {
     endwin();
     wprintw(stdscr, "You scored: %d @ Episode %d\n", score, i);
 
-    if (i % 100 == 0) write_qtable(data, i); 
+    if (i % 50 == 0) write_qtable(data, i); 
   }
 }
 
 int main() {
-  train(100000); 
+  train(1000000); 
   return EXIT_SUCCESS;
 }

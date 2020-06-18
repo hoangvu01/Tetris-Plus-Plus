@@ -1,32 +1,8 @@
 #include "qtable.h"
 
 #define Q_SIZE 100
-/*
-int compare_env_state(void *this, void *that) {
-  grid_t this_grid = ((env_t *) this)->grid;
-  grid_t that_grid = ((env_t *) that)->grid;
- 
-  for (int i = 0; i < GHEIGHT; i++){
-    for (int j = 0; j < GWIDTH; j++) {
-      if ((this_grid[i][j] > 0) ^ (that_grid[i][j] > 0))
-        return this_grid[i][j] - that_grid[i][j];
-    }
-  }
 
-  return ((env_t *) this)->block - ((env_t *) that)->block;
 
-}
-*/
-/*
-long compare_hash(void *this, void *that) {
-  return *((long *) this) - *((long *) that);
-}
-*/
-/*
-long identity(void *ptr) {
-  return *((long *) ptr);
-}
-*/
 long hash_env_state(void *env_ptr) {
   env_t *env = (env_t *) env_ptr;
   long hash = 0;

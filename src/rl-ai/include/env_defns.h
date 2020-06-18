@@ -25,7 +25,6 @@ typedef struct {
   int complete_lines;
   int holes;
   int max_height;
-  int min_height;
   double score;
 } q_state;
 
@@ -33,6 +32,6 @@ typedef struct {
   q_table *qtable;
   q_state *prev;
   q_state *curr;
-} q_data_t;
+} q_data;
 
 #endif

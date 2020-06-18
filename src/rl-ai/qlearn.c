@@ -9,7 +9,7 @@
 #define GAMMA 0.8
 #define EPSILON 0.2
 
-#define A (-0.281)
+#define A (-0.35)
 #define B (-0.132)
 #define C (10)
 #define D (-0.3)
@@ -18,13 +18,13 @@
 #define randfloat() ((float) rand() / (float) RAND_MAX)
 
 static void compute_env(env_t *env, state_t *curr);
-static int get_optimal_move(q_data_t *data, env_t *env, double **actions);
+static int get_optimal_move(q_data *data, env_t *env, double **actions);
 
-static void evaluate_state(state_t *curr, q_data_t *data);
+static void evaluate_state(state_t *curr, q_data *data);
 static void evaluate_grid(grid_t grid, q_state *curr);
 static void evaluate_heights(state_t *game, q_state *curr);
 
-static double update_score(q_data_t *data);
+static double update_score(q_data *data);
 static void print_scr(q_state *curr);
 
 const int actions_space[] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, 'Z', 'X'};
@@ -34,7 +34,7 @@ typedef struct timespec timespec_t;
 void updateFrame(timespec_t *now, timespec_t *lastFrame,
                  unsigned long *frameNum); 
 
-int play(q_data_t *data) {
+int play(q_data *data) {
   WINDOW *game_win = init_display();
   state_t *curr = initState(LEVEL);
   bool hasMoving = false;
@@ -100,7 +100,7 @@ void simulate_input(state_t *curr, int key) {
   if (canMove(&teststate)) *curr = teststate;
 }
 
-static int get_optimal_move(q_data_t *data, env_t *env, double **actions) {
+static int get_optimal_move(q_data *data, env_t *env, double **actions) {
   double *q_actions = find_qtable(data->qtable, env);
   /* No action existing */
   if (q_actions == NULL) {
@@ -120,7 +120,7 @@ static int get_optimal_move(q_data_t *data, env_t *env, double **actions) {
   return move;
 }
 
-void step(q_data_t *data, state_t *curr) {
+void step(q_data *data, state_t *curr) {
   int move;
   double **actions = malloc(sizeof(double *));
   
@@ -160,7 +160,7 @@ void step(q_data_t *data, state_t *curr) {
 static void compute_env(env_t *env, state_t *curr) {
   env->block = curr->block - curr->list;
   env->spin = curr->rotation;
-  env->block_x = INT_MAX;
+  env->block_x = curr->pos.x;
   env->elevation = calloc(GWIDTH, sizeof(int));
  
   int max_height = 0;
@@ -176,17 +176,9 @@ static void compute_env(env_t *env, state_t *curr) {
     env->elevation[i] -= max_height;
     if (env->elevation[i] <= -3) env->elevation[i] = -2;
   }
-  
-  for (int i = 0; i < 4; i++) {
-    position_t cell;
-    pplus(&cell, curr->pos, curr->block->spins[curr->rotation][i]);
-
-    if (cell.x >= 0 && cell.x < GWIDTH) 
-      env->block_x = fmin(cell.x, env->block_x);
-  }
 }
 
-static void evaluate_state(state_t *curr, q_data_t *data) {
+static void evaluate_state(state_t *curr, q_data *data) {
   evaluate_grid(curr->grid, data->curr);
   evaluate_heights(curr, data->curr);
 }
@@ -220,7 +212,7 @@ static void evaluate_heights(state_t *curr, q_state *qstate) {
   }
 }
 
-static double update_score(q_data_t *data) {
+static double update_score(q_data *data) {
   q_state *curr = data->curr;
   q_state *prev = data->prev;
   double new_score = 
