@@ -14,20 +14,24 @@ void updateFrame(timespec_t *now, timespec_t *lastFrame, unsigned long *frameNum
  * max_piece = 500, iterations = 5
  */
 /* the conservative */
-static param_state_t param = {0.553276, 0.271804, 0.753433, 0.228793, 0.000000, 191};
+static param_state_t param_conservative = {0.553276, 0.271804, 0.753433, 0.228793, 0.000000, 191};
 /* the risky */
-//static param_state_t param = {0.407466, 0.294228, 0.838129, 0.189285, 0.095462, 1342};
-/* the risky 2*/
-//static param_state_t param = {0.312306, 0.324220, 0.848936, 0.213801, 0.175910, 1390};
-static param_state_t *param_p = &param;
+static param_state_t param_risky = {0.126242, 0.619805, 0.769578, 0.087483, 0, 500};
+static param_state_t *param_conservative_p = &param_conservative;
+static param_state_t *param_risky_p = &param_risky;
 
-int main(void) {
+int main(int argc, char **argv) {
   int levelNum = startScreen();
-  startGame(levelNum);
+  if (strcmp(argv[1], "conservative") == 0) {
+    startGame(levelNum, param_conservative_p);
+  } else if (strcmp(argv[1], "risky") == 0) {
+    startGame(levelNum, param_risky_p);
+  }
+
   return EXIT_SUCCESS;
 }
 
-void startGame(int levelNum) {
+void startGame(int levelNum, param_state_t *param_p, bool is_conservative) {
   WINDOW *game_win = init_display();
   state_t *curr = initState(levelNum);
   bool hasMoving = false;
@@ -42,7 +46,7 @@ void startGame(int levelNum) {
     if (!hasMoving) {
       if (!spawnTetriminos(curr)) break;
       block_t best_block;
-      immutable_best_move(curr, param_p, &best_block, 0);
+      immutable_best_move(curr, param_p, &best_block, 0, is_conservative);
       set_state_by_block(curr, &best_block);
       curr->pos.y = 2;
       hasMoving = true;
