@@ -10,8 +10,10 @@
 #include "levels.h"
 #include "tetriminos.h"
 
-#define PI_MODE
-#define GAME_MODE PI_SPORTS
+/* Uncomment this line to enable playing on PI */
+// #define PI_MODE
+/* Choose mode on this line */
+#define GAME_MODE KEY_BOARD
 
 typedef struct {
   /* list of all tetrimino and grid of static blocks */
