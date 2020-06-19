@@ -3,6 +3,7 @@
 
 #include "grid.h"
 #include "state.h"
+#include "gpio_led_array.h"
 
 #define WINDOW_WIDTH 30
 #define WINDOW_HEIGHT 30

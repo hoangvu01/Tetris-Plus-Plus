@@ -141,6 +141,10 @@ void printSquare(WINDOW *win, int colour_scheme) {
 }
 
 void printGrid(grid_t grid, WINDOW *w_game) {
+  #ifdef PI_MODE
+    update_led(grid);
+  #endif
+
   for (int i = 2; i < GHEIGHT; i++) {
     wmove(w_game, i - 1, 1);
     for (int j = 0; j < GWIDTH; j++) {

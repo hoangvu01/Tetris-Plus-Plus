@@ -10,6 +10,11 @@
 #include "levels.h"
 #include "tetriminos.h"
 
+/* Uncomment this line to enable playing on PI */
+// #define PI_MODE
+/* Choose mode on this line */
+#define GAME_MODE KEY_BOARD
+
 typedef struct {
   /* list of all tetrimino and grid of static blocks */
   tetrimino_t *list;
@@ -23,6 +28,11 @@ typedef struct {
   position_t pos;
   int rotation;
 } state_t;
+
+enum operations {NONE, LEFT, RIGHT, RLEFT, RRIGHT, DOWN, PAUSE};
+typedef enum operations operator_t;
+enum modes {KEY_BOARD, PI_BUTTON, PI_SPORTS, PI_DRIVING, PI_RHYTHMS};
+typedef enum modes inmode_t;
 
 /*
  * @returns: A heap allocated struct describing the state of the game.
@@ -46,7 +56,7 @@ void freeState(state_t *curr);
  * the rules.
  * @param curr: the current state of the game.
  */
-void processInput(state_t *curr);
+void processInput(state_t *curr, inmode_t mode);
 
 /*
  * Pauses the current game and prints out pause message. waits for user input

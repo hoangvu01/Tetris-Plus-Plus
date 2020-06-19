@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <wiringPi.h>
+#include <pthread.h>
 #include "gpio_sports.h"
-#include "sys/time.h"
+#include <sys/time.h>
 
 /* GPIO 4 - PIN 16 */
 #define LEFT_ULTRASOUND 4
@@ -17,17 +18,19 @@
 #define ULTRASOUND_TRIGGER 0
 
 /* Time interval for ultrasound reflection that is considered in range*/
-#define ultra_range(time) ((time > 0) && (time < 800))
+#define ultra_range(time) ((time > 0) && (time < 1000))
 /* Special flag used to avoid duplicated inputs. Optimized for the behavior of sensors */
 #define FLAG_COUNT 10
 
 /* Specifies which sensors are plugged in */
 #define LEFT_PLUG_IN
+#define RIGHT_PLUG_IN
 #define RLEFT_PLUG_IN
+#define SOUND_PLUG_IN
 // #define ALL_PLUG_IN
 
 /* Flags used to avoid duplicated inputs */
-static int left, right, rleft, rright;
+static int left, right, rleft, rright, down;
 
 /*
  * Detects the distance measured by an ultrasound sensor
@@ -35,8 +38,13 @@ static int left, right, rleft, rright;
  * @returns: Time taken for the ultrasound to travel and bounce back (in microsecond)
  */
 static int detect_ultrasound(int ultrasound_sensor);
+static void *detect_sound(void *dummy); 
 
 operator_t get_sports(void) {
+  if (down > 0) {
+    down--;
+    return DOWN;
+  }
 
   #if defined LEFT_PLUG_IN || defined ALL_PLUG_IN
     int distance_l = detect_ultrasound(LEFT_ULTRASOUND);
@@ -81,14 +89,6 @@ operator_t get_sports(void) {
       rright = 0;
     }
   #endif
-
-  #if defined SOUND_PLUG_IN || defined ALL_PLUG_IN
-    int sound = digitalRead(DOWN_SOUND);
-    if (sound == LOW) {
-      return DOWN;
-    }
-  #endif
-
   return NONE;
 }
 
@@ -111,6 +111,13 @@ void init_gpio_sp(void) {
   right = 0;
   rleft = 0;
   rright = 0;
+  down = 0;
+
+  #if defined SOUND_PLUG_IN || defined ALL_PLUG_IN
+    /* Start a separate thread to monitor the sound sensor */
+    pthread_t thread_id;
+    pthread_create(&thread_id, NULL, detect_sound, NULL);
+  #endif
 }
 
 static int detect_ultrasound(int ultrasound_sensor) {
@@ -118,7 +125,7 @@ static int detect_ultrasound(int ultrasound_sensor) {
   
   /* Sends an ultrasound signal  */
   digitalWrite(ULTRASOUND_TRIGGER, HIGH);
-  delayMicroseconds(10);
+  delayMicroseconds(20);
   digitalWrite(ULTRASOUND_TRIGGER, LOW);
 
   /* Detects the ultrasound signal and calculates delta time */
@@ -128,4 +135,15 @@ static int detect_ultrasound(int ultrasound_sensor) {
     gettimeofday(&end, NULL);
   
   return end.tv_usec - start.tv_usec;
+}
+
+static void *detect_sound(void *dummy) {
+  while (1) {
+    int sound = digitalRead(DOWN_SOUND);
+    if (sound == LOW) {
+      down = 5;
+      delay(1000);
+    }   
+  }
+  return NULL;
 }

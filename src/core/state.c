@@ -1,5 +1,6 @@
 #include "state.h"
 #include "display.h"
+#include "gpio_input.h"
 
 state_t *initState(int levelNum) {
   state_t *curr = malloc(sizeof(state_t));
@@ -59,37 +60,60 @@ bool dropPiece(state_t *curr) {
   }
 }
 
-int getInput(){
-  // TODO: implement this to support both PC and Pi
-  return getch();
+operator_t getInput(inmode_t mode){
+  if (mode == KEY_BOARD) {
+    switch (getch()) {
+      case KEY_DOWN:
+        return DOWN;
+      case KEY_LEFT:
+        return LEFT;
+      case KEY_RIGHT:
+        return RIGHT;
+      case 'Z':
+      case 'z':
+        return RLEFT;
+      case 'X':
+      case 'x':
+        return RRIGHT;
+      case 'P':
+      case 'p':
+        return PAUSE;        
+      default:
+        return NONE;
+    }
+  }
+  #ifdef PI_MODE
+    return gpio_input(mode);
+  #endif
+  fprintf(stderr, "Not in Raspberry PI mode.");
+  return NONE;
 }
 
-void processInput(state_t *curr) {
-  state_t teststate = *curr;
-  switch (getInput()) {
-    case KEY_DOWN:
-      teststate.pos.y++;
+void processInput(state_t *curr, inmode_t mode) {
+  state_t state = *curr;
+  switch (getInput(mode)) {
+    case DOWN:
+      state.pos.y++;
       break;
-    case KEY_RIGHT:
-      teststate.pos.x++;
+    case RIGHT:
+      state.pos.x++;
       break;
-    case KEY_LEFT:
-      teststate.pos.x--;
+    case LEFT:
+      state.pos.x--;
       break;
-    case 'Z':
-    case 'z':
-      teststate.rotation = antiClockwise(curr->block, teststate.rotation);
+    case RLEFT:
+      state.rotation = antiClockwise(curr->block, state.rotation);
       break;
-    case 'X':
-    case 'x':
-      teststate.rotation = clockwise(curr->block, teststate.rotation);
+    case RRIGHT:
+      state.rotation = clockwise(curr->block, state.rotation);
       break;
-    case 'P':
-    case 'p':
+    case PAUSE:
       pauseGame();
       break;
+    default:
+      break;  
   }
-  if (canMove(&teststate)) *curr = teststate;
+  if (canMove(&state)) *curr = state;
 }
 
 void pauseGame() {

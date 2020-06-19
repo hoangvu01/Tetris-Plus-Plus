@@ -15,7 +15,7 @@ IncludePath = $(addprefix -I, $(wildcard src/*/include)) $(addprefix -I, $(wildc
 CFLAGS      = -MMD -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
 GENEFLAGS   = -DLLVM_ENABLE_ASSERTIONS=On -Xpreprocessor -fopenmp -O3
 LDLIBS      = -lncurses -lm $(addprefix -L, $(wildcard lib/*/.)) $(wildcard lib/*/*.a)
-PILIBS      = -lwiringPi
+PILIBS      = -lwiringPi -lpthread 
 
 all: lib core genetic genetic-train pi rl
 core:     bin/tetris

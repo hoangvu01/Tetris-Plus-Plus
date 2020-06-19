@@ -1,24 +1,20 @@
-CC 					= gcc
-IncludePath	= -I../include -I../../core/include
-CFLAGS		= -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
-LFLAGS 		= -lwiringPi
-OBJ_FILES 	= gpio_test.o gpio_input.o gpio_button.o gpio_sports.o gpio_driving.o
+CC          = gcc
+IncludePath = -I../include -I../../core/include
+CFLAGS      = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
+LFLAGS      = -lwiringPi -lpthread
+SRC         = $(wildcard ../*.c)
+TEST_SRC    = $(wildcard *.c)
+OBJS        = $(patsubst ../%.c,%.o, $(SRC)) $(patsubst %.c, %.o, $(TEST_SRC))
 
-pi: gpio_input
+all: gpio_test
 
-gpio_input: $(OBJ_FILES)
-	$(CC) $(CFLAGS) $(OBJ_FILES) -o gpio_test $(LFLAGS)
+gpio_test: $(OBJS)
+	$(CC) $^ $(LFLAGS) -o $@
 
-gpio_input.o: ../gpio_input.c
+%.o: ../%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-gpio_button.o: ../gpio_button.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-gpio_sports.o: ../gpio_sports.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-gpio_driving.o: ../gpio_driving.c
+%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:

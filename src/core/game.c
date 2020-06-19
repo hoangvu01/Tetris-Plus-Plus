@@ -8,6 +8,7 @@
 #include "display.h"
 #include "levels.h"
 #include "state.h"
+#include "gpio_input.h"
 
 #ifndef CLOCK_PROCESS_CPUTIME_ID
 #define CLOCK_PROCESS_CPUTIME_ID 2
@@ -28,6 +29,10 @@ void startGame(int levelNum) {
   timespec_t now, lastFrame;
   unsigned long frameNum = 0;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &lastFrame);
+  
+  #ifdef PI_MODE
+    init_gpio(GAME_MODE);
+  #endif
 
   while (1) {
     updateFrame(&now, &lastFrame, &frameNum);
@@ -37,7 +42,7 @@ void startGame(int levelNum) {
       hasMoving = true;
     }
     printState(curr, game_win);
-    processInput(curr);
+    processInput(curr, GAME_MODE);
 
     if (frameNum % framePerDrop(curr->level) == 0) hasMoving = dropPiece(curr);
   }
