@@ -43,10 +43,6 @@ bool insert_qtable(q_table *table, env_t *env_state, void *value) {
   return hash_insert(table, (void *) env_state, sizeof(env_t), value);
 }
 
-bool load_hash_qtable(q_table *table, long *hash, void *value) {
-  return hash_insert(table, hash, sizeof(long), value);
-}
-
 void *find_qtable(q_table *table, env_t *env_state) {
   return hash_find(table, (void *) env_state);
 }
@@ -55,9 +51,9 @@ void free_qtable(q_table *table) {
   hash_table_itr *itr = get_hash_table_itr(table);
 
   while (hash_iterator_hasnext(itr)) {
-    env_t *env = NULL;
-    hash_iterator_next(itr, env);
-    free(env->elevation);
+    env_t env;
+    hash_iterator_next(itr, &env);
   }
+  free(itr);
   free_hashtable(table);
 }

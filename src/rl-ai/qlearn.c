@@ -51,6 +51,8 @@ int play(q_data *data) {
     if (frameNum % framePerDrop(curr->level) == 0)
       hasMoving = dropPiece(curr);
   }
+  free(data->curr->heights);
+  free(data->curr);
   freeState(curr);
   return curr->level.score;
 }
@@ -96,7 +98,7 @@ void simulate_input(state_t *curr, int key) {
 }
 
 static int get_optimal_move(q_data *data, env_t *env, double **actions) {
-  double *q_actions = find_qtable(data->qtable, env);
+  double *q_actions = (void *) find_qtable(data->qtable, env);
   /* No action existing */
   if (q_actions == NULL) {
     q_actions = calloc(NO_ACTIONS, sizeof(double));
@@ -123,31 +125,36 @@ void step(q_data *data, state_t *curr) {
   env_t *env = calloc(1, sizeof(env_t));
   if (env == NULL) return;  
   compute_env(env, curr);
+  
 
   /* Exploration or Exploitation */
   move = get_optimal_move(data, env, actions);
   if (randfloat() < EPSILON) 
-  move = rand() % NO_ACTIONS; /* Exploration */
+    move = rand() % NO_ACTIONS; /* Exploration */
 
   /* Evaluate the move */
+  compute_env(env, curr);
   data->curr = calloc(1, sizeof(q_state));
   data->curr->heights = calloc(GWIDTH, sizeof(int));
   simulate_input(curr, actions_space[move]);
   evaluate_state(curr, data);  
+  
    
   /* Calculate Q-Value */
-  compute_env(env, curr);
   double reward = update_score(data);
   double next_max = (*actions)[get_optimal_move(data, env, actions)];
   double new_score = data->curr->score + ALPHA * (reward + GAMMA * next_max);
   (*actions)[move] = new_score;
   data->curr->score = new_score;
+ 
+  /* Swap previous frame with current frame */
   if (data->prev != NULL) {
     free(data->prev->heights);
     free(data->prev);
   }
   data->prev = data->curr;
- 
+
+  /* Free locally created resources */
   free(actions);
   free(env);
 }
@@ -157,7 +164,7 @@ static void compute_env(env_t *env, state_t *curr) {
   env->spin = curr->rotation;
   env->block_x = curr->pos.x;
   env->elevation = calloc(GWIDTH, sizeof(int));
- 
+
   int max_height = 0;
   for (int i = 0; i < GHEIGHT; i++) {
     for (int j = 0; j < GWIDTH; j++) {
