@@ -2,6 +2,7 @@
 
 #ignore temp files
 *~
+*.d
 
 #ignore pdf files (just keep source files)
 *.pdf
@@ -22,8 +23,11 @@
 #ignore junk files from compiling C code
 *.o
 *.out
-bin/tetris
+*_test
+bin/*
 
+#ignore junk files from running C code
+*.txt
 
 #ignore junk files from compiling Haskell code
 *.hi

@@ -10,6 +10,8 @@ typedef struct {
   double complete_line_w; //weight for number of complete lines
   double hole_number_w; //weight for the number of holes
   double bumpiness_w; //weight for the numpiness
+  //double risk_w; /* THIS IS CURRENTLY DISABLED: the willingness of building structures that can make more line clears */
+  int loss; //computed loss for this weight setup
 } param_state_t;
 
 #endif
