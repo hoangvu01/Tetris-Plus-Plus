@@ -1,6 +1,7 @@
 #include <string.h>
 #include "utils.h"
 
+/* The static functions are only used in this file. */
 
 double cap_to_nonnegative(double n) {
     if (n < 0) return 0.0;
@@ -55,6 +56,7 @@ void normalize(param_state_t *param) {
   param->complete_line_w /= magnitude;
   param->hole_number_w /= magnitude;
   param->bumpiness_w /= magnitude;
+  //param->risk_w /= magnitude;
 }
 
 bool dropPieceWithOptions(state_t *curr, bool clear_lines, bool color_grid, int* lines_cleared) {
@@ -102,7 +104,7 @@ void free_param_array(param_state_t **param_array) {
 }
 
 void print_param(const param_state_t *param) {
-    printf("param_state_t(A=%f, B=%f, C=%f, D=%f, l=%d)\n", param->aggregate_height_w, param->complete_line_w, param->hole_number_w, param->bumpiness_w, param->loss);
+    printf("param_state_t(height=%f, clear_lines=%f, hole_num=%f, bumpiness=%f, loss=%d)\n", param->aggregate_height_w, param->complete_line_w, param->hole_number_w, param->bumpiness_w, param->loss);
 }
 
 void print_param_array(param_state_t **param_array, int array_size) {
@@ -174,7 +176,27 @@ int get_bumpiness(grid_t grid) {
     }
     return b;
 }
+/* This function is originally bnuilt for increasing AI's will to take risks, but turned out to be ineffective.
+ * The related fields/functions to risk is disabled. The current increase of will to take risk is due to different implementation in best_move
+int get_risk(grid_t grid) {
+  int risk = 0;
+  if (get_column_height(grid, 1) - get_column_height(grid, 0) <= 5) {
+    risk += 4;
+  }
+  for (int x = 1; x < GWIDTH - 1; x++) {
+    int diff1 = get_column_height(grid, x-1) - get_column_height(grid, x);
+    int diff2 = get_column_height(grid, x) - get_column_height(grid, x+1);
+    if (diff1 >= 5 && diff2 <= -5) {
+        risk += 4;
+    }
+  }
+  if (get_column_height(grid, GWIDTH - 2) - get_column_height(grid, GWIDTH - 1) <= 5) {
+    risk += 4;
+  }
 
+  return risk;
+}
+*/
 void print_and_save_result(param_state_t **array, bool is_saving) {
     param_state_t *first = array[0];
     param_state_t *second = array[1];
@@ -207,7 +229,7 @@ param_state_t **read_param_from_file(char *filename, int array_size) {
   }
   param_array[array_size] = NULL;
   int i = 0;
-  while (fscanf(fp, "%d %lf %lf %lf %lf ", &param_array[i]->loss, &param_array[i]->aggregate_height_w, &param_array[i]->complete_line_w, &param_array[i]->hole_number_w, &param_array[i]->bumpiness_w) == 5) {
+  while (fscanf(fp, "%d %lf %lf %lf %lf", &param_array[i]->loss, &param_array[i]->aggregate_height_w, &param_array[i]->complete_line_w, &param_array[i]->hole_number_w, &param_array[i]->bumpiness_w) == 5) {
     i++;
   }
 

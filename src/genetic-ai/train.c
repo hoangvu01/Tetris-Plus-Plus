@@ -7,7 +7,7 @@
 #define OFFSPRING_SIZE 30
 
 const int n_iterations = 5;
-const int n_pieces = 500;
+const int n_pieces = 200;
 
 void train(char *filename) {
     param_state_t **param_array = NULL;
@@ -65,6 +65,8 @@ param_state_t *generate_random_param() {
     param->complete_line_w = randomDouble(0, 1);
     param->hole_number_w = randomDouble(0, 1);
     param->bumpiness_w = randomDouble(0, 1);
+    /* risk parameter is currently disabled */
+    //param->risk_w = randomDouble(0, 1);
     param->loss = INT_MAX;
 
     return param;
@@ -81,7 +83,7 @@ param_state_t **init_param_array(int size) {
 }
 
 // find out the best move without altering the state
-double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared) {
+double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared, bool is_conservative) {
     double best_loss = -INFINITY;
 
     /* try different rotation/direction */
@@ -93,7 +95,8 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
             if (canMove(new_state)) {
                 int lines_cleared = 0;
                 while (dropPieceWithOptions(new_state, true, true, &lines_cleared));
-                total_lines_cleared += lines_cleared;
+		int score[5] = {0, 40, 100, 300, 1200};
+                total_lines_cleared += is_conservative ? lines_cleared : score[lines_cleared];
 
                 double curr_loss = 0.0;
                 block_t *old_block = NULL;
@@ -102,12 +105,14 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
                                 - param->hole_number_w * get_hole_number(new_state->grid)
                                 - param->bumpiness_w * get_bumpiness(new_state->grid)
                                 + param->complete_line_w * total_lines_cleared;
+                                //+ param->risk_w * get_risk(new_state->grid);
                 } else {
                     old_block = init_block_from_state(new_state);
                     //print_block(old_block);
-                    spawnTetriminos(new_state);
+                    new_state->block = new_state->nextBlock;
+                    new_state->pos.y = 2;
                     new_state->nextBlock = NULL;
-                    curr_loss = immutable_best_move(new_state, param, NULL, total_lines_cleared);
+                    curr_loss = immutable_best_move(new_state, param, NULL, total_lines_cleared, is_conservative);
                 }
 
                 if (curr_loss > best_loss) {
@@ -128,7 +133,7 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
 int best_move(state_t *state, const param_state_t *param) {
     block_t best_block;
     best_block.id = -1;
-    immutable_best_move(state, param, &best_block, 0);
+    immutable_best_move(state, param, &best_block, 0, false);
     if (best_block.id == -1) return -1; // no possible move
     //print_block(&best_block);
     set_state_by_block(state, &best_block);
@@ -151,7 +156,7 @@ void compute_loss(param_state_t *param, int iterations, int max_pieces) {
                 printf("no more moves available, skipping\n");
                 break;
             }
-            loss += curr_loss;
+            loss += curr_loss * curr_loss;
         }
         param_loss += loss;
         freeState(state);
@@ -190,6 +195,8 @@ bool generate_child(param_state_t **fittest, param_state_t **param_array, int ar
         param->complete_line_w += temp->complete_line_w * temp->loss;
         param->hole_number_w += temp->hole_number_w * temp->loss;
         param->bumpiness_w += temp->bumpiness_w * temp->loss;
+        /* risk is currently disabled */
+        //param->risk_w += temp->risk_w * temp->loss;
     }
     normalize(param);
 

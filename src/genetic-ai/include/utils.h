@@ -69,6 +69,7 @@ int get_aggregate_height(grid_t grid);
 int get_complete_line(grid_t grid);
 int get_hole_number(grid_t grid);
 int get_bumpiness(grid_t grid);
+int get_risk(grid_t grid);
 
 /*
  * @brief: printing and saving functions during training. It will save all the parameter vectors

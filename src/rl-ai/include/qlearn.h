@@ -3,10 +3,14 @@
 #ifndef Q_LEARN_H
 #define Q_LEARN_H
 
-#include "game.h"
+#include "env_defns.h"
 #include "state.h"
-#include "grid.h"
 
-void play(state_t *);
+/* Start game */
+int play(q_data *data);
+
+/* Performs an action given state of the game */
+void step(q_data *, state_t *);
+
 
 #endif

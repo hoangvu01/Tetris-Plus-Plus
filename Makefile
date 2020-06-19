@@ -9,18 +9,19 @@ RL_OBJS   = $(patsubst src/rl-ai/%.c,obj/rl-ai/%.o,$(RL_SRC))
 PI_OBJS   = $(patsubst src/pi/%.c,obj/pi/%.o,$(PI_SRC))
 CORE_NO_MAIN = $(filter-out obj/core/tetris.o, $(CORE_OBJS))
 DEPS = $(CORE_OBJS:%.o=%.d) $(GENE_OBJS:%.o=%.d) $(RL_OBJS:%.o=%.d) $(PI_OBJS:%.o=%.d)
-
+ 
 CC          = gcc
-IncludePath = $(addprefix -I, $(wildcard src/*/include)) 
+IncludePath = $(addprefix -I, $(wildcard src/*/include)) $(addprefix -I, $(wildcard lib/*/include)) 
 CFLAGS      = -MMD -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic $(IncludePath)
 GENEFLAGS   = -DLLVM_ENABLE_ASSERTIONS=On -Xpreprocessor -fopenmp -O3
-LDLIBS      = -lncurses -lm
+LDLIBS      = -lncurses -lm $(addprefix -L, $(wildcard lib/*/.)) $(wildcard lib/*/*.a)
 PILIBS      = -lwiringPi -lpthread 
 
-all: core genetic pi rl lib
+all: lib core genetic genetic-train pi rl
 core:     bin/tetris
-genetic:  bin/gtrain
-rl:       bin/rltrain
+genetic:  bin/genetic-ai-play
+genetic-train: bin/genetic-train
+rl-train: bin/rltrain
 pi:       bin/tetrispi
 
 bin/tetris: $(CORE_OBJS)
@@ -29,11 +30,14 @@ bin/tetris: $(CORE_OBJS)
 bin/tetrispi: $(PI_OBJS) $(CORE_OBJS)
 	$(CC) $^ $(LDLIBS) $(PILIBS) -o $@
 
-bin/gtrain: $(GENE_OBJS) $(CORE_NO_MAIN)
-	$(CC) $^ $(LDLIBS) -lomp -o $@
+bin/genetic-ai-play: $(filter-out obj/genetic-ai/genetic-train.o, $(GENE_OBJS)) $(filter-out obj/core/game.o, $(CORE_NO_MAIN))
+	$(CC) $^ $(LDLIBS) -fopenmp -o $@
 
-bin/rltrain: $(RL_OBJS) $(CORE_NO_MAIN)
-	$(CC) $^ $(LDLIBS) -o $@
+bin/genetic-train: $(filter-out obj/genetic-ai/genetic-ai-play.o, $(GENE_OBJS)) $(filter-out obj/core/game.o, $(CORE_NO_MAIN))
+	$(CC) $^ $(LDLIBS) -fopenmp -o $@
+
+bin/rltrain: lib bin/tetris $(RL_OBJS) $(filter-out obj/core/game.o, $(CORE_NO_MAIN))
+	$(CC)  $(RL_OBJS) $(filter-out obj/core/game.o, $(CORE_NO_MAIN)) $(LDLIBS) -o $@
 
 # pre-processor automatically adds headers as dependencies
 -include $(DEPS)
@@ -57,7 +61,7 @@ lib:
 clean:
 	rm -f $(DEPS)
 	rm -f $(CORE_OBJS) $(GENE_OBJS) $(RL_OBJS) $(PI_OBJS)
-	rm -f  bin/tetris bin/gtrain bin/rltrain bin/tetrispi
+	rm -f  bin/tetris bin/genetic-ai-play bin/rltrain bin/tetrispi
 	cd lib; make clean
 
 .PHONY: src clean lib core genetic pi rl

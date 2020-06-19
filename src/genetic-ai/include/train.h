@@ -14,6 +14,10 @@
 #define randomInteger(min, max)  (rand() % (max - min) + min)
 #define randomDouble(min, max)  (rand() % 100 / 100.0) * (max - min) + min
 
+/*
+ * the entry point(main logic) of training
+ */
+void train(char *filename);
 
 /*
  * @brief: generate random parameter vector at first, similar to randomize the parameters in an artificial neural network
@@ -32,7 +36,7 @@ param_state_t **init_param_array(int size);
  * @brief: helper function for best_move. Used in play.c as well
  */
 
-double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared);
+double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared, bool is_conservative);
 
 /*
  * @brief: calculate the best move from the given block and grid layout with the given parameter vector
