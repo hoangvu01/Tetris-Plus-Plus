@@ -82,7 +82,7 @@ param_state_t **init_param_array(int size) {
 }
 
 // find out the best move without altering the state
-double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared) {
+double immutable_best_move(const state_t *state, const param_state_t *param, block_t *best_block, int total_lines_cleared, bool is_conservative) {
     double best_loss = -INFINITY;
 
     /* try different rotation/direction */
@@ -94,13 +94,13 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
             if (canMove(new_state)) {
                 int lines_cleared = 0;
                 while (dropPieceWithOptions(new_state, true, true, &lines_cleared));
-		int score[5] = {0, 40, 100, 300, 1200};
-                total_lines_cleared += score[lines_cleared];
+		            int score[5] = {0, 40, 100, 300, 1200};
+                total_lines_cleared += is_conservative ? lines_cleared : score[lines_cleared];
 
                 double curr_loss = 0.0;
                 block_t *old_block = NULL;
                 if (state->nextBlock == NULL) {
-                    curr_loss = + param->aggregate_height_w * get_aggregate_height(new_state->grid)
+                    curr_loss = - param->aggregate_height_w * get_aggregate_height(new_state->grid)
                                 - param->hole_number_w * get_hole_number(new_state->grid)
                                 - param->bumpiness_w * get_bumpiness(new_state->grid)
                                 + param->complete_line_w * total_lines_cleared;
@@ -111,7 +111,7 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
                     new_state->block = new_state->nextBlock;
                     new_state->pos.y = 2;
                     new_state->nextBlock = NULL;
-                    curr_loss = immutable_best_move(new_state, param, NULL, total_lines_cleared);
+                    curr_loss = immutable_best_move(new_state, param, NULL, total_lines_cleared, is_conservative);
                 }
 
                 if (curr_loss > best_loss) {
@@ -132,7 +132,7 @@ double immutable_best_move(const state_t *state, const param_state_t *param, blo
 int best_move(state_t *state, const param_state_t *param) {
     block_t best_block;
     best_block.id = -1;
-    immutable_best_move(state, param, &best_block, 0);
+    immutable_best_move(state, param, &best_block, 0, false);
     if (best_block.id == -1) return -1; // no possible move
     //print_block(&best_block);
     set_state_by_block(state, &best_block);

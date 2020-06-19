@@ -8,7 +8,7 @@
 
 typedef struct timespec timespec_t;
 
-void startGame(int levelNum);
+void startGameWithAI(int levelNum, param_state_t *param_p, bool is_conservative);
 void updateFrame(timespec_t *now, timespec_t *lastFrame, unsigned long *frameNum);
 /* This parameter has been trained over the following config:
  * max_piece = 500, iterations = 5
@@ -16,22 +16,23 @@ void updateFrame(timespec_t *now, timespec_t *lastFrame, unsigned long *frameNum
 /* the conservative */
 static param_state_t param_conservative = {0.553276, 0.271804, 0.753433, 0.228793, 0.000000, 191};
 /* the risky */
-static param_state_t param_risky = {0.126242, 0.619805, 0.769578, 0.087483, 0, 500};
+static param_state_t param_risky = {0.684983, 0.029138, 0.585340, 0.432812, 0.351574, 531};
+//static param_state_t param_risky = {0.663952, 0.048066, 0.679833, 0.307709, 0.381876, 541};
 static param_state_t *param_conservative_p = &param_conservative;
 static param_state_t *param_risky_p = &param_risky;
 
 int main(int argc, char **argv) {
   int levelNum = startScreen();
   if (strcmp(argv[1], "conservative") == 0) {
-    startGame(levelNum, param_conservative_p);
+    startGameWithAI(levelNum, param_conservative_p, true);
   } else if (strcmp(argv[1], "risky") == 0) {
-    startGame(levelNum, param_risky_p);
+    startGameWithAI(levelNum, param_risky_p, false);
   }
 
   return EXIT_SUCCESS;
 }
 
-void startGame(int levelNum, param_state_t *param_p, bool is_conservative) {
+void startGameWithAI(int levelNum, param_state_t *param_p, bool is_conservative) {
   WINDOW *game_win = init_display();
   state_t *curr = initState(levelNum);
   bool hasMoving = false;
