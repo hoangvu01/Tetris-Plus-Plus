@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdbool.h>
-#include "gpio_rythms.h"
+#include "gpio_rhythms.h"
 
 /* Device Address for the LEFT Controller */
 #define LEFT_DEV_ADDR 0x68
@@ -40,7 +40,7 @@ static short read_data(int fd, int addr);
 static int set;
 static int down_count;
 
-operator_t get_rythms(void) {
+operator_t get_rhythms(void) {
   if (down_count > 0) {
     down_count--;
     return DOWN;
