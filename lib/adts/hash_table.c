@@ -216,7 +216,7 @@ void *hash_iterator_next(hash_table_itr *itr, void *key) {
 
   hashnode *cur = itr->table->arr[itr->index++];
   void *res = cur->value;
-  memcpy(key, cur->key, cur->key_size);
+  key = cur->key;
 
   while (itr->index < itr->table->max_size) {
     if (itr->table->arr[itr->index] == NULL) 

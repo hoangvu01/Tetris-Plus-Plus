@@ -101,9 +101,11 @@ void train(int episodes) {
 
     if (i % 50 == 0) write_qtable(data, i); 
   }
+  free_qtable(data->qtable);
+  free(data);
 }
 
 int main() {
-  train(1000000); 
+  train(1); 
   return EXIT_SUCCESS;
 }
