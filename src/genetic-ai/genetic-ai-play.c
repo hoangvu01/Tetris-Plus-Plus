@@ -14,9 +14,9 @@ void updateFrame(timespec_t *now, timespec_t *lastFrame, unsigned long *frameNum
  * max_piece = 500, iterations = 5
  */
 /* the conservative */
-static param_state_t param_conservative = {0.553276, 0.271804, 0.753433, 0.228793, 0.000000, 191};
+static param_state_t param_conservative = {0.553276, 0.271804, 0.753433, 0.228793, 191};
 /* the risky */
-static param_state_t param_risky = {0.684983, 0.029138, 0.585340, 0.432812, 0.351574, 531};
+static param_state_t param_risky = {0.684983, 0.029138, 0.585340, 0.432812, 531};
 //static param_state_t param_risky = {0.663952, 0.048066, 0.679833, 0.307709, 0.381876, 541};
 static param_state_t *param_conservative_p = &param_conservative;
 static param_state_t *param_risky_p = &param_risky;

@@ -65,7 +65,8 @@ param_state_t *generate_random_param() {
     param->complete_line_w = randomDouble(0, 1);
     param->hole_number_w = randomDouble(0, 1);
     param->bumpiness_w = randomDouble(0, 1);
-    param->risk_w = randomDouble(0, 1);
+    /* risk parameter is currently disabled */
+    //param->risk_w = randomDouble(0, 1);
     param->loss = INT_MAX;
 
     return param;
@@ -194,7 +195,8 @@ bool generate_child(param_state_t **fittest, param_state_t **param_array, int ar
         param->complete_line_w += temp->complete_line_w * temp->loss;
         param->hole_number_w += temp->hole_number_w * temp->loss;
         param->bumpiness_w += temp->bumpiness_w * temp->loss;
-        param->risk_w += temp->risk_w * temp->loss;
+        /* risk is currently disabled */
+        //param->risk_w += temp->risk_w * temp->loss;
     }
     normalize(param);
 
