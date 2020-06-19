@@ -2,14 +2,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <ncurses.h>
 
 #include "qlearn.h"
 #include "qtable.h"
 #include "env_defns.h"
-
-#define ALPHA 0.1
-#define GAMMA 0.5
-#define EPSILON 0.1
 
 
 void load_qtable(q_data *data){

@@ -1,5 +1,9 @@
 #include "qtable.h"
 
+#include <stdlib.h>
+
+#include "display.h"
+
 #define Q_SIZE 100
 
 

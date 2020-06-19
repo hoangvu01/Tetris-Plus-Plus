@@ -3,11 +3,20 @@
 
 #include "hash_table.h"
 
-#include "game.h"
-#include "state.h"
-#include "grid.h"
-#include "display.h"
+#define LEVEL 1000 
+#define FRAME_RATE 60
 
+#define NO_ACTIONS 6
+
+#define ALPHA 0.2
+#define GAMMA 0.8
+#define EPSILON 0.2
+
+#define A (-0.35)
+#define B (-0.132)
+#define C (10)
+#define D (-0.3)
+#define E (-0.7)
 
 typedef hash_table q_table;
 

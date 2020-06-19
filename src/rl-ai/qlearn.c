@@ -1,19 +1,14 @@
 #include "qlearn.h"
 
-#define LEVEL 1000 
-#define FRAME_RATE 60
+#include <math.h>
+#include <limits.h>
+#include <time.h>
+#include <unistd.h>
 
-#define NO_ACTIONS 6
-
-#define ALPHA 0.2
-#define GAMMA 0.8
-#define EPSILON 0.2
-
-#define A (-0.35)
-#define B (-0.132)
-#define C (10)
-#define D (-0.3)
-#define E (-0.7)
+#include "qtable.h"
+#include "env_defns.h"
+#include "display.h"
+#include "game.h"
 
 #define randfloat() ((float) rand() / (float) RAND_MAX)
 
