@@ -1,4 +1,5 @@
 #include "state.h"
+
 #include "display.h"
 #include "gpio_input.h"
 
@@ -14,13 +15,13 @@ state_t *initState(int levelNum) {
 }
 
 state_t *cloneState(const state_t *state) {
-    state_t *new_state = malloc(sizeof(state_t));
-    memcpy(new_state, state, sizeof(state_t));
-    new_state->grid = cloneGrid(state->grid);
-    new_state->list = initTetrimino();
-    new_state->nextBlock = new_state->list + (state->nextBlock - state->list);
-    new_state->block = new_state->list + (state->block - state->list);
-    return new_state;
+  state_t *new_state = malloc(sizeof(state_t));
+  memcpy(new_state, state, sizeof(state_t));
+  new_state->grid = cloneGrid(state->grid);
+  new_state->list = initTetrimino();
+  new_state->nextBlock = new_state->list + (state->nextBlock - state->list);
+  new_state->block = new_state->list + (state->block - state->list);
+  return new_state;
 }
 
 void freeState(state_t *curr) {
@@ -60,7 +61,7 @@ bool dropPiece(state_t *curr) {
   }
 }
 
-operator_t getInput(inmode_t mode){
+operator_t getInput(inmode_t mode) {
   if (mode == KEY_BOARD) {
     switch (getch()) {
       case KEY_DOWN:
@@ -77,14 +78,15 @@ operator_t getInput(inmode_t mode){
         return RRIGHT;
       case 'P':
       case 'p':
-        return PAUSE;        
+      case '\n':
+        return PAUSE;
       default:
         return NONE;
     }
   }
-  #ifdef PI_MODE
-    return gpio_input(mode);
-  #endif
+#ifdef PI_MODE
+  return gpio_input(mode);
+#endif
   fprintf(stderr, "Not in Raspberry PI mode.");
   return NONE;
 }
@@ -111,7 +113,7 @@ void processInput(state_t *curr, inmode_t mode) {
       pauseGame();
       break;
     default:
-      break;  
+      break;
   }
   if (canMove(&state)) *curr = state;
 }
@@ -140,7 +142,7 @@ bool canMove(state_t *test) {
   return true;
 }
 
-int readHighScore(){
+int readHighScore() {
   FILE *file = fopen("highscore.txt", "r");
   if (!file) {
     return 0;
@@ -154,7 +156,7 @@ int readHighScore(){
   return val;
 }
 
-void writeHighScore(int highScore){
+void writeHighScore(int highScore) {
   FILE *file = fopen("highscore.txt", "w");
   if (!file) {
     fprintf(stderr, "write error. ");

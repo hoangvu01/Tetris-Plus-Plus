@@ -23,7 +23,7 @@ int startScreen() {
       "  | | |  __|  | | |    /  | |  `--. \\\n"
       "  | | | |___  | | | |\\ \\ _| |_/\\__/ /\n"
       "  \\_/ \\____/  \\_/ \\_| \\_|\\___/\\____/ \n\n");
-  printf("Press P to pause. \n");
+  printf("Press enter to pause. \n");
   printf("Press Z / X to rotate. \n");
   printf("Press arrow keys to shift. \n\n");
   int levelNum;
@@ -68,7 +68,6 @@ WINDOW *init_display() {
   keypad(stdscr, true);
   refresh();
 
-  // TODO: write an offset as a function of window size
   int y_offset, x_offset, window_width;
 
   int maxy, maxx;
